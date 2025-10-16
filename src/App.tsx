@@ -1,9 +1,26 @@
 import React, { useState } from 'react';
 import { Menu, User, ChevronDown, Plus, MoreVertical } from 'lucide-react';
 
+// Types
+interface Task {
+  id: number;
+  title: string;
+  assignee: string;
+}
+
+interface Column {
+  id: number;
+  title: string;
+  tasks: Task[];
+}
+
+interface AuthPageProps {
+  onLogin: () => void;
+}
+
 // 로그인/회원가입 페이지
-const AuthPage = ({ onLogin }) => {
-  const [isLogin, setIsLogin] = useState(true);
+const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
+  const [isLogin, setIsLogin] = useState<boolean>(true);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -94,13 +111,13 @@ const AuthPage = ({ onLogin }) => {
 };
 
 // 메인 대시보드
-const MainDashboard = () => {
-  const [selectedWorkspace, setSelectedWorkspace] = useState('개발팀 워크스페이스');
-  const [selectedProject, setSelectedProject] = useState('웹 앱 리뉴얼');
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showWorkspaceMenu, setShowWorkspaceMenu] = useState(false);
+const MainDashboard: React.FC = () => {
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string>('개발팀 워크스페이스');
+  const [selectedProject, setSelectedProject] = useState<string>('웹 앱 리뉴얼');
+  const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
+  const [showWorkspaceMenu, setShowWorkspaceMenu] = useState<boolean>(false);
 
-  const [columns, setColumns] = useState([
+  const [columns, setColumns] = useState<Column[]>([
     {
       id: 1,
       title: 'To Do',
@@ -134,22 +151,22 @@ const MainDashboard = () => {
     }
   ]);
 
-  const [draggedTask, setDraggedTask] = useState(null);
-  const [draggedFromColumn, setDraggedFromColumn] = useState(null);
+  const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const [draggedFromColumn, setDraggedFromColumn] = useState<number | null>(null);
 
-  const workspaces = ['개발팀 워크스페이스', '디자인팀 워크스페이스', '마케팅팀 워크스페이스'];
-  const projects = ['웹 앱 리뉴얼', '모바일 앱 개발', '신규 기능 추가'];
+  const workspaces: string[] = ['개발팀 워크스페이스', '디자인팀 워크스페이스', '마케팅팀 워크스페이스'];
+  const projects: string[] = ['웹 앱 리뉴얼', '모바일 앱 개발', '신규 기능 추가'];
 
-  const handleDragStart = (task, columnId) => {
+  const handleDragStart = (task: Task, columnId: number): void => {
     setDraggedTask(task);
     setDraggedFromColumn(columnId);
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
   };
 
-  const handleDrop = (targetColumnId) => {
+  const handleDrop = (targetColumnId: number): void => {
     if (!draggedTask || !draggedFromColumn) return;
 
     const newColumns = columns.map(col => {
@@ -331,8 +348,8 @@ const MainDashboard = () => {
 };
 
 // 메인 앱
-const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const App: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   return (
     <div>
