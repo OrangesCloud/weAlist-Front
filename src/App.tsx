@@ -680,7 +680,7 @@ const MainDashboard: React.FC = () => {
                     <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
                     <button className="relative w-full py-3 sm:py-4 border-2 sm:border-4 border-dashed border-black bg-white hover:bg-orange-50 transition flex items-center justify-center gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" style={pixelFontStyle}>
                       <Plus className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
-                      ADD QUEST
+                      ADD TASK
                     </button>
                   </div>
                 </div>
@@ -691,7 +691,7 @@ const MainDashboard: React.FC = () => {
             <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
             <button className="relative w-full h-24 sm:h-32 border-2 sm:border-4 border-dashed border-black bg-white hover:bg-orange-50 transition flex items-center justify-center gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" style={pixelFontStyle}>
               <Plus className="w-4 h-4 sm:w-5 sm:h-5" style={{ strokeWidth: 3 }} />
-              NEW COLUMN
+              NEW TICKET
             </button>
           </div>
         </div>
