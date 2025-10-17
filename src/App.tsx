@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { Menu, User, ChevronDown, Plus, MoreVertical } from 'lucide-react';
+import { Menu, User, ChevronDown, Plus, MoreVertical, X, Calendar, Tag, MessageSquare, Send } from 'lucide-react';
 
 // Types
 interface Task {
   id: number;
   title: string;
   assignee: string;
+  description?: string;
+  dueDate?: string;
+  priority?: string;
+}
+
+interface TaskComment {
+  id: number;
+  author: string;
+  content: string;
+  timestamp: string;
 }
 
 interface Column {
@@ -18,135 +28,407 @@ interface AuthPageProps {
   onLogin: () => void;
 }
 
-// 로그인/회원가입 페이지
+interface UserProfile {
+  name: string;
+  email: string;
+  level: number;
+  avatar: string;
+}
+
+const pixelFontStyle = {
+  fontFamily: "'Press Start 2P', cursive",
+  imageRendering: 'pixelated' as const,
+};
+
 const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState<boolean>(true);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2 text-center">
-          칸반 프로젝트
-        </h1>
-        <p className="text-gray-600 mb-8 text-center">
-          {isLogin ? '로그인하여 시작하세요' : '새 계정을 만들어보세요'}
-        </p>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-5" style={{
+        backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)',
+        backgroundSize: '20px 20px'
+      }}></div>
 
-        <div className="space-y-4 mb-6">
-          <input
-            type="email"
-            placeholder="이메일"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="password"
-            placeholder="비밀번호"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            onClick={onLogin}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-          >
-            {isLogin ? '로그인' : '회원가입'}
-          </button>
-        </div>
+      <div className="bg-orange-500 rounded-none p-2 w-full max-w-md relative z-10 shadow-2xl border-4 sm:border-8 border-black" style={{ boxShadow: '0 8px 0 #000' }}>
+        <div className="bg-white border-2 sm:border-4 border-black p-4 sm:p-6">
+          <h1 className="text-lg sm:text-2xl font-bold text-orange-600 mb-2 text-center" style={{ ...pixelFontStyle, textShadow: '3px 3px 0 #000' }}>
+            KANBAN QUEST
+          </h1>
+          <p className="text-[8px] sm:text-xs text-gray-800 mb-4 sm:mb-6 text-center" style={pixelFontStyle}>
+            {isLogin ? 'INSERT COIN' : 'NEW PLAYER'}
+          </p>
 
-        <div className="relative mb-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
+          <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+            <div className="relative">
+              <div className="absolute -top-1 -left-1 w-full h-full bg-black"></div>
+              <input
+                type="email"
+                placeholder="EMAIL"
+                className="relative w-full px-3 sm:px-4 py-2 sm:py-3 border-2 sm:border-4 border-black bg-white text-[8px] sm:text-sm focus:outline-none focus:ring-4 focus:ring-orange-400"
+                style={pixelFontStyle}
+              />
+            </div>
+            <div className="relative">
+              <div className="absolute -top-1 -left-1 w-full h-full bg-black"></div>
+              <input
+                type="password"
+                placeholder="PASSWORD"
+                className="relative w-full px-3 sm:px-4 py-2 sm:py-3 border-2 sm:border-4 border-black bg-white text-[8px] sm:text-sm focus:outline-none focus:ring-4 focus:ring-orange-400"
+                style={pixelFontStyle}
+              />
+            </div>
+            <div className="relative">
+              <div className="absolute top-1 left-1 w-full h-full bg-orange-700"></div>
+              <button
+                onClick={onLogin}
+                className="relative w-full bg-orange-500 text-white py-3 sm:py-4 border-2 sm:border-4 border-black font-bold hover:bg-orange-600 transition text-[10px] sm:text-sm active:top-1 active:left-1"
+                style={pixelFontStyle}
+              >
+                {isLogin ? 'START GAME' : 'CREATE HERO'}
+              </button>
+            </div>
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">또는</span>
+
+          <div className="relative mb-4 sm:mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t-2 sm:border-t-4 border-dashed border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-[8px] sm:text-xs">
+              <span className="px-2 bg-white text-gray-800 border-2 sm:border-4 border-gray-300" style={pixelFontStyle}>OR</span>
+            </div>
           </div>
+
+          <div className="space-y-2 sm:space-y-3">
+            <div className="relative">
+              <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
+              <button
+                onClick={onLogin}
+                className="relative w-full flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 border-2 sm:border-4 border-black bg-white hover:bg-gray-50 transition active:top-1 active:left-1"
+              >
+                <div className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 border-2 border-black flex-shrink-0"></div>
+                <span className="font-bold text-[8px] sm:text-xs" style={pixelFontStyle}>GOOGLE</span>
+              </button>
+            </div>
+
+            <div className="relative">
+              <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
+              <button
+                onClick={onLogin}
+                className="relative w-full flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 border-2 sm:border-4 border-black bg-white hover:bg-gray-50 transition active:top-1 active:left-1"
+              >
+                <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gray-800 border-2 border-black flex-shrink-0"></div>
+                <span className="font-bold text-[8px] sm:text-xs" style={pixelFontStyle}>GITHUB</span>
+              </button>
+            </div>
+
+            <div className="relative">
+              <div className="absolute top-1 left-1 w-full h-full bg-yellow-600"></div>
+              <button
+                onClick={onLogin}
+                className="relative w-full flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 border-2 sm:border-4 border-black bg-yellow-400 hover:bg-yellow-500 transition active:top-1 active:left-1"
+              >
+                <div className="w-4 h-4 sm:w-5 sm:h-5 bg-yellow-500 border-2 border-black flex-shrink-0"></div>
+                <span className="font-bold text-[8px] sm:text-xs" style={pixelFontStyle}>KAKAO</span>
+              </button>
+            </div>
+          </div>
+
+          <p className="mt-4 sm:mt-6 text-center text-[8px] sm:text-xs" style={pixelFontStyle}>
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-orange-600 hover:text-orange-700 underline"
+            >
+              {isLogin ? 'NEW GAME?' : 'CONTINUE?'}
+            </button>
+          </p>
         </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onLogin}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            <span className="font-medium text-gray-700">Google로 계속하기</span>
-          </button>
-
-          <button
-            onClick={onLogin}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-          >
-            <svg className="w-5 h-5" fill="#181717" viewBox="0 0 24 24">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-            <span className="font-medium text-gray-700">GitHub로 계속하기</span>
-          </button>
-
-          <button
-            onClick={onLogin}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
-          >
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
-              <path fill="#FEE500" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0z"/>
-              <path fill="#3C1E1E" d="M10.5 14.5h-3c-.276 0-.5-.224-.5-.5v-4c0-.276.224-.5.5-.5h3c.276 0 .5.224.5.5v4c0 .276-.224.5-.5.5zm6.5 0h-3c-.276 0-.5-.224-.5-.5v-4c0-.276.224-.5.5-.5h3c.276 0 .5.224.5.5v4c0 .276-.224.5-.5.5zm-1.5-7.5h-7c-.276 0-.5.224-.5.5v.5c0 .276.224.5.5.5h7c.276 0 .5-.224.5-.5V7.5c0-.276-.224-.5-.5-.5z"/>
-            </svg>
-            <span className="font-medium text-gray-700">카카오톡으로 계속하기</span>
-          </button>
-        </div>
-
-        <p className="mt-6 text-center text-sm text-gray-600">
-          {isLogin ? '계정이 없으신가요?' : '이미 계정이 있으신가요?'}
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="ml-2 text-blue-600 font-semibold hover:underline"
-          >
-            {isLogin ? '회원가입' : '로그인'}
-          </button>
-        </p>
       </div>
     </div>
   );
 };
 
-// 메인 대시보드
+const UserProfileModal: React.FC<{ user: UserProfile; onClose: () => void }> = ({ user, onClose }) => {
+  const [name, setName] = useState(user.name);
+  const [email, setEmail] = useState(user.email);
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+      <div className="relative w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="absolute top-2 left-2 w-full h-full bg-black"></div>
+        <div className="relative bg-white border-4 border-black p-6">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b-4 border-black">
+            <h2 className="text-sm sm:text-base font-bold" style={pixelFontStyle}>PLAYER INFO</h2>
+            <button onClick={onClose} className="bg-red-500 border-2 border-black p-2 hover:bg-red-600">
+              <X className="w-4 h-4 text-white" style={{ strokeWidth: 3 }} />
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex justify-center mb-6">
+              <div className="w-24 h-24 bg-orange-500 border-4 border-black flex items-center justify-center text-white text-3xl font-bold" style={pixelFontStyle}>
+                {user.name[0]}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[8px] sm:text-xs mb-2 text-gray-600" style={pixelFontStyle}>NAME:</label>
+              <div className="relative">
+                <div className="absolute -top-1 -left-1 w-full h-full bg-black"></div>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="relative w-full px-3 py-2 border-2 border-black bg-white text-xs"
+                  style={pixelFontStyle}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[8px] sm:text-xs mb-2 text-gray-600" style={pixelFontStyle}>EMAIL:</label>
+              <div className="relative">
+                <div className="absolute -top-1 -left-1 w-full h-full bg-black"></div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="relative w-full px-3 py-2 border-2 border-black bg-white text-xs"
+                  style={pixelFontStyle}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[8px] sm:text-xs mb-2 text-gray-600" style={pixelFontStyle}>LEVEL:</label>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 bg-gray-200 border-2 border-black h-6">
+                  <div className="bg-orange-500 h-full border-r-2 border-black" style={{ width: `${user.level}%` }}></div>
+                </div>
+                <span className="text-xs font-bold" style={pixelFontStyle}>{user.level}</span>
+              </div>
+            </div>
+
+            <div className="flex gap-2 pt-4">
+              <div className="relative flex-1">
+                <div className="absolute top-1 left-1 w-full h-full bg-orange-700"></div>
+                <button className="relative w-full bg-orange-500 text-white py-3 border-2 border-black hover:bg-orange-600 transition text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+                  SAVE
+                </button>
+              </div>
+              <div className="relative flex-1">
+                <div className="absolute top-1 left-1 w-full h-full bg-gray-400"></div>
+                <button onClick={onClose} className="relative w-full bg-gray-300 py-3 border-2 border-black hover:bg-gray-400 transition text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+                  CANCEL
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TaskDetailModal: React.FC<{ task: Task; onClose: () => void }> = ({ task, onClose }) => {
+  const [comments, setComments] = useState<TaskComment[]>([
+    { id: 1, author: 'KIM', content: 'Looking good!', timestamp: '2h ago' },
+    { id: 2, author: 'LEE', content: 'Need more details', timestamp: '1h ago' }
+  ]);
+  const [newComment, setNewComment] = useState('');
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      setComments([...comments, {
+        id: comments.length + 1,
+        author: 'PLAYER1',
+        content: newComment,
+        timestamp: 'Just now'
+      }]);
+      setNewComment('');
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto" onClick={onClose}>
+      <div className="relative w-full max-w-2xl my-8" onClick={(e) => e.stopPropagation()}>
+        <div className="absolute top-2 left-2 w-full h-full bg-black"></div>
+        <div className="relative bg-white border-4 border-black p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
+          <div className="flex items-start justify-between mb-4 pb-4 border-b-4 border-black">
+            <div className="flex-1 pr-4">
+              <h2 className="text-xs sm:text-base font-bold mb-2 break-words" style={pixelFontStyle}>{task.title}</h2>
+              <div className="flex items-center gap-2 mt-3">
+                <div className="w-8 h-8 bg-orange-500 border-2 border-black flex items-center justify-center text-white text-xs font-bold" style={pixelFontStyle}>
+                  {task.assignee[0]}
+                </div>
+                <span className="text-[8px] sm:text-xs" style={pixelFontStyle}>{task.assignee}</span>
+              </div>
+            </div>
+            <button onClick={onClose} className="bg-red-500 border-2 border-black p-2 hover:bg-red-600 flex-shrink-0">
+              <X className="w-4 h-4 text-white" style={{ strokeWidth: 3 }} />
+            </button>
+          </div>
+
+          <div className="space-y-4 mb-6">
+            <div>
+              <label className="flex items-center gap-2 text-[8px] sm:text-xs mb-2 text-gray-600" style={pixelFontStyle}>
+                <Calendar className="w-4 h-4" />
+                DUE DATE:
+              </label>
+              <div className="relative">
+                <div className="absolute -top-1 -left-1 w-full h-full bg-black"></div>
+                <div className="relative px-3 py-2 border-2 border-black bg-gray-50 text-xs" style={pixelFontStyle}>
+                  2025-10-25
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2 text-[8px] sm:text-xs mb-2 text-gray-600" style={pixelFontStyle}>
+                <Tag className="w-4 h-4" />
+                PRIORITY:
+              </label>
+              <div className="relative inline-block">
+                <div className="absolute top-1 left-1 w-full h-full bg-red-700"></div>
+                <div className="relative px-3 py-2 border-2 border-black bg-red-500 text-white text-xs" style={pixelFontStyle}>
+                  HIGH
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[8px] sm:text-xs mb-2 text-gray-600 block" style={pixelFontStyle}>
+                DESCRIPTION:
+              </label>
+              <div className="relative">
+                <div className="absolute -top-1 -left-1 w-full h-full bg-black"></div>
+                <textarea
+                  className="relative w-full px-3 py-2 border-2 border-black bg-gray-50 text-xs min-h-24"
+                  style={pixelFontStyle}
+                  defaultValue="This is a detailed description of the task."
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t-4 border-black pt-4">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageSquare className="w-4 h-4" style={{ strokeWidth: 3 }} />
+              <h3 className="text-[8px] sm:text-xs font-bold" style={pixelFontStyle}>
+                COMMENTS ({comments.length})
+              </h3>
+            </div>
+
+            <div className="space-y-3 mb-4 max-h-60 overflow-y-auto">
+              {comments.map((comment) => (
+                <div key={comment.id} className="relative">
+                  <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
+                  <div className="relative bg-white border-2 border-black p-3">
+                    <div className="flex items-start gap-2">
+                      <div className="w-6 h-6 bg-orange-500 border-2 border-black flex items-center justify-center text-white text-[8px] font-bold flex-shrink-0" style={pixelFontStyle}>
+                        {comment.author[0]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[8px] font-bold" style={pixelFontStyle}>{comment.author}</span>
+                          <span className="text-[8px] text-gray-500" style={pixelFontStyle}>{comment.timestamp}</span>
+                        </div>
+                        <p className="text-[8px] sm:text-xs break-words" style={pixelFontStyle}>{comment.content}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="relative">
+              <div className="absolute top-1 left-1 w-full h-full bg-black"></div>
+              <div className="relative border-2 border-black bg-white p-2 flex gap-2">
+                <input
+                  type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
+                  placeholder="ADD COMMENT..."
+                  className="flex-1 px-2 py-1 border-2 border-black text-[8px] sm:text-xs"
+                  style={pixelFontStyle}
+                />
+                <button
+                  onClick={handleAddComment}
+                  className="bg-orange-500 text-white px-3 py-1 border-2 border-black hover:bg-orange-600 transition flex items-center gap-1"
+                >
+                  <Send className="w-3 h-3" style={{ strokeWidth: 3 }} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-2 mt-6 pt-4 border-t-4 border-black">
+            <div className="relative flex-1">
+              <div className="absolute top-1 left-1 w-full h-full bg-orange-700"></div>
+              <button className="relative w-full bg-orange-500 text-white py-3 border-2 border-black hover:bg-orange-600 transition text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+                SAVE
+              </button>
+            </div>
+            <div className="relative">
+              <div className="absolute top-1 left-1 w-full h-full bg-red-700"></div>
+              <button className="relative bg-red-500 text-white px-4 py-3 border-2 border-black hover:bg-red-600 transition text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+                DELETE
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const MainDashboard: React.FC = () => {
-  const [selectedWorkspace, setSelectedWorkspace] = useState<string>('개발팀 워크스페이스');
-  const [selectedProject, setSelectedProject] = useState<string>('웹 앱 리뉴얼');
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string>('DEV WORLD');
+  const [selectedProject, setSelectedProject] = useState<string>('WEB QUEST');
   const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
   const [showWorkspaceMenu, setShowWorkspaceMenu] = useState<boolean>(false);
+  const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
+  const [showUserProfile, setShowUserProfile] = useState<boolean>(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  const userProfile: UserProfile = {
+    name: 'PLAYER1',
+    email: 'player1@example.com',
+    level: 99,
+    avatar: 'P'
+  };
 
   const [columns, setColumns] = useState<Column[]>([
     {
       id: 1,
-      title: 'To Do',
+      title: 'TODO ZONE',
       tasks: [
-        { id: 1, title: 'UI 디자인 검토', assignee: '김철수' },
-        { id: 2, title: 'API 문서 작성', assignee: '박영희' }
+        { id: 1, title: 'UI DESIGN', assignee: 'KIM' },
+        { id: 2, title: 'API DOCS', assignee: 'PARK' }
       ]
     },
     {
       id: 2,
-      title: 'In Progress',
+      title: 'BATTLE MODE',
       tasks: [
-        { id: 3, title: '로그인 기능 개발', assignee: '이민수' },
-        { id: 4, title: '데이터베이스 설계', assignee: '최지원' }
+        { id: 3, title: 'LOGIN FUNC', assignee: 'LEE' },
+        { id: 4, title: 'DB SETUP', assignee: 'CHOI' }
       ]
     },
     {
       id: 3,
-      title: 'Review',
+      title: 'REVIEW STAGE',
       tasks: [
-        { id: 5, title: '코드 리뷰 요청', assignee: '정다은' }
+        { id: 5, title: 'CODE CHECK', assignee: 'JUNG' }
       ]
     },
     {
       id: 4,
-      title: 'Done',
+      title: 'VICTORY!',
       tasks: [
-        { id: 6, title: '프로젝트 초기 설정', assignee: '김철수' },
-        { id: 7, title: '요구사항 정리', assignee: '박영희' }
+        { id: 6, title: 'PROJECT INIT', assignee: 'KIM' },
+        { id: 7, title: 'REQUIREMENTS', assignee: 'PARK' }
       ]
     }
   ]);
@@ -154,8 +436,10 @@ const MainDashboard: React.FC = () => {
   const [draggedTask, setDraggedTask] = useState<Task | null>(null);
   const [draggedFromColumn, setDraggedFromColumn] = useState<number | null>(null);
 
-  const workspaces: string[] = ['개발팀 워크스페이스', '디자인팀 워크스페이스', '마케팅팀 워크스페이스'];
-  const projects: string[] = ['웹 앱 리뉴얼', '모바일 앱 개발', '신규 기능 추가'];
+  const workspaces: string[] = ['DEV WORLD', 'DESIGN LAND', 'MARKET ZONE'];
+  const projects: string[] = ['WEB QUEST', 'MOBILE SAGA', 'NEW FEATURE'];
+
+  const columnColors = ['bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-purple-500'];
 
   const handleDragStart = (task: Task, columnId: number): void => {
     setDraggedTask(task);
@@ -191,24 +475,34 @@ const MainDashboard: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* 헤더 */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          {/* 좌측: 워크스페이스 선택 */}
-          <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-gray-800">칸반</h1>
-            <div className="relative">
+    <div className="min-h-screen bg-gray-100">
+      <div className="fixed inset-0 opacity-5" style={{
+        backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)',
+        backgroundSize: '20px 20px'
+      }}></div>
+
+      <header className="bg-orange-500 border-b-4 sm:border-b-8 border-black px-3 sm:px-6 py-2 sm:py-4 relative" style={{ boxShadow: '0 4px 0 #000' }}>
+        <div className="flex items-center justify-between relative z-10">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="bg-white border-2 sm:border-4 border-black px-2 sm:px-4 py-1 sm:py-2" style={{ boxShadow: '2px 2px 0 #000, 4px 4px 0 #000' }}>
+              <h1 className="text-sm sm:text-xl font-bold text-orange-600" style={{ ...pixelFontStyle, textShadow: '2px 2px 0 #000' }}>
+                KANBAN
+              </h1>
+            </div>
+            
+            <div className="relative hidden md:block">
+              <div className="absolute top-1 left-1 w-full h-full bg-black"></div>
               <button
                 onClick={() => setShowWorkspaceMenu(!showWorkspaceMenu)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+                className="relative flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-2 bg-white border-2 sm:border-4 border-black hover:bg-gray-100 transition text-[8px] sm:text-xs active:top-1 active:left-1"
+                style={pixelFontStyle}
               >
-                <Menu className="w-4 h-4" />
-                <span className="font-medium">{selectedWorkspace}</span>
-                <ChevronDown className="w-4 h-4" />
+                <Menu className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
+                <span className="hidden lg:inline">{selectedWorkspace}</span>
+                <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
               </button>
               {showWorkspaceMenu && (
-                <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
+                <div className="absolute top-full left-0 mt-2 w-48 sm:w-64 bg-white border-2 sm:border-4 border-black z-20" style={{ boxShadow: '4px 4px 0 #000' }}>
                   {workspaces.map((workspace) => (
                     <button
                       key={workspace}
@@ -216,46 +510,62 @@ const MainDashboard: React.FC = () => {
                         setSelectedWorkspace(workspace);
                         setShowWorkspaceMenu(false);
                       }}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-50 transition"
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-orange-100 transition border-b-2 border-gray-200 last:border-b-0 text-[8px] sm:text-xs"
+                      style={pixelFontStyle}
                     >
                       {workspace}
                     </button>
                   ))}
-                  <div className="border-t border-gray-200 my-2"></div>
-                  <button className="w-full px-4 py-2 text-left text-blue-600 hover:bg-gray-50 transition flex items-center gap-2">
-                    <Plus className="w-4 h-4" />
-                    새 워크스페이스 만들기
+                  <div className="border-t-2 sm:border-t-4 border-black"></div>
+                  <button className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left bg-orange-500 text-white hover:bg-orange-600 transition flex items-center gap-2 text-[8px] sm:text-xs" style={pixelFontStyle}>
+                    <Plus className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
+                    NEW WORLD
                   </button>
                 </div>
               )}
             </div>
+
+            <button
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="md:hidden relative bg-white border-2 border-black p-2"
+            >
+              <Menu className="w-5 h-5" style={{ strokeWidth: 3 }} />
+            </button>
           </div>
 
-          {/* 우측: 사용자 메뉴 */}
           <div className="relative">
+            <div className="absolute top-1 left-1 w-full h-full bg-black"></div>
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+              className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-white border-2 sm:border-4 border-black hover:bg-gray-100 transition text-[8px] sm:text-xs active:top-1 active:left-1"
+              style={pixelFontStyle}
             >
-              <User className="w-5 h-5" />
-              <span className="font-medium">홍길동</span>
-              <ChevronDown className="w-4 h-4" />
+              <User className="w-4 h-4 sm:w-5 sm:h-5" style={{ strokeWidth: 3 }} />
+              <span className="hidden sm:inline">PLAYER1</span>
+              <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
             </button>
             {showUserMenu && (
-              <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10">
-                <div className="px-4 py-2 border-b border-gray-200">
-                  <p className="font-semibold">홍길동</p>
-                  <p className="text-sm text-gray-600">hong@example.com</p>
+              <div className="absolute top-full right-0 mt-2 w-48 sm:w-56 bg-white border-2 sm:border-4 border-black z-20" style={{ boxShadow: '4px 4px 0 #000' }}>
+                <div className="px-3 sm:px-4 py-2 sm:py-3 border-b-2 sm:border-b-4 border-black bg-orange-500 text-white">
+                  <p className="font-bold text-[8px] sm:text-xs" style={pixelFontStyle}>PLAYER1</p>
+                  <p className="text-[8px] sm:text-xs mt-1" style={pixelFontStyle}>LV.99</p>
                 </div>
-                <button className="w-full px-4 py-2 text-left hover:bg-gray-50 transition">
-                  프로필 설정
+                <button 
+                  onClick={() => {
+                    setShowUserProfile(true);
+                    setShowUserMenu(false);
+                  }}
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-orange-100 transition border-b-2 border-gray-200 text-[8px] sm:text-xs" 
+                  style={pixelFontStyle}
+                >
+                  PROFILE
                 </button>
-                <button className="w-full px-4 py-2 text-left hover:bg-gray-50 transition">
-                  팀 관리
+                <button className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-orange-100 transition border-b-2 border-gray-200 text-[8px] sm:text-xs" style={pixelFontStyle}>
+                  TEAM
                 </button>
-                <div className="border-t border-gray-200 my-2"></div>
-                <button className="w-full px-4 py-2 text-left text-red-600 hover:bg-gray-50 transition">
-                  로그아웃
+                <div className="border-t-2 sm:border-t-4 border-black"></div>
+                <button className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left bg-red-500 hover:bg-red-600 transition text-white text-[8px] sm:text-xs" style={pixelFontStyle}>
+                  GAME OVER
                 </button>
               </div>
             )}
@@ -263,102 +573,182 @@ const MainDashboard: React.FC = () => {
         </div>
       </header>
 
-      {/* 프로젝트 선택 바 */}
-      <div className="bg-white border-b border-gray-200 px-6 py-3">
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">프로젝트:</span>
-          <div className="flex gap-2">
-            {projects.map((project) => (
-              <button
-                key={project}
-                onClick={() => setSelectedProject(project)}
-                className={`px-4 py-2 rounded-lg transition ${
-                  selectedProject === project
-                    ? 'bg-blue-100 text-blue-700 font-semibold'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {project}
+      {showMobileMenu && (
+        <div className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setShowMobileMenu(false)}>
+          <div className="bg-white border-4 border-black w-64 h-full p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xs font-bold" style={pixelFontStyle}>MENU</h2>
+              <button onClick={() => setShowMobileMenu(false)} className="bg-red-500 border-2 border-black p-1">
+                <X className="w-4 h-4 text-white" style={{ strokeWidth: 3 }} />
               </button>
+            </div>
+            <div className="space-y-2">
+              <p className="text-[8px] text-gray-600 mb-2" style={pixelFontStyle}>WORKSPACES:</p>
+              {workspaces.map((workspace) => (
+                <button
+                  key={workspace}
+                  onClick={() => {
+                    setSelectedWorkspace(workspace);
+                    setShowMobileMenu(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left border-2 border-black text-[8px] ${
+                    selectedWorkspace === workspace ? 'bg-orange-500 text-white' : 'bg-white hover:bg-gray-100'
+                  }`}
+                  style={pixelFontStyle}
+                >
+                  {workspace}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white border-b-2 sm:border-b-4 border-black px-3 sm:px-6 py-2 sm:py-3 overflow-x-auto">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-max">
+          <span className="text-[8px] sm:text-xs text-gray-800 font-bold" style={pixelFontStyle}>STAGE:</span>
+          <div className="flex gap-2 flex-nowrap">
+            {projects.map((project, idx) => (
+              <div key={project} className="relative flex-shrink-0">
+                <div className="absolute top-1 left-1 w-full h-full bg-black"></div>
+                <button
+                  onClick={() => setSelectedProject(project)}
+                  className={`relative px-2 sm:px-4 py-1 sm:py-2 border-2 sm:border-4 border-black transition text-[8px] sm:text-xs active:top-1 active:left-1 whitespace-nowrap ${
+                    selectedProject === project
+                      ? 'bg-orange-500 text-white'
+                      : 'bg-white text-gray-800 hover:bg-gray-100'
+                  }`}
+                  style={pixelFontStyle}
+                >
+                  {idx + 1}-{project}
+                </button>
+              </div>
             ))}
-            <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              새 프로젝트
+            <div className="relative flex-shrink-0">
+              <div className="absolute top-1 left-1 w-full h-full bg-orange-700"></div>
+              <button className="relative px-2 sm:px-4 py-1 sm:py-2 bg-orange-500 text-white border-2 sm:border-4 border-black hover:bg-orange-600 transition flex items-center gap-1 sm:gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+                <Plus className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
+                NEW
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-3 sm:p-6 relative z-10">
+        <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 lg:overflow-x-auto pb-4">
+          {columns.map((column, idx) => (
+            <div
+              key={column.id}
+              onDragOver={handleDragOver}
+              onDrop={() => handleDrop(column.id)}
+              className="w-full lg:w-80 lg:flex-shrink-0 relative"
+            >
+              <div className="absolute top-1 left-1 w-full h-full bg-black"></div>
+              <div className="relative border-2 sm:border-4 border-black p-3 sm:p-4 bg-white">
+                <div className="flex items-center justify-between mb-3 sm:mb-4 pb-2 border-b-2 sm:border-b-4 border-black">
+                  <h3 className="font-bold text-gray-800 flex items-center gap-2 text-[8px] sm:text-xs" style={pixelFontStyle}>
+                    <span className={`w-3 h-3 sm:w-4 sm:h-4 ${columnColors[idx]} border-2 border-black`}></span>
+                    {column.title}
+                    <span className="bg-black text-white px-1 sm:px-2 py-1 border-2 border-black text-[8px] sm:text-xs">
+                      {column.tasks.length}
+                    </span>
+                  </h3>
+                  <button className="text-gray-800 hover:text-orange-600">
+                    <MoreVertical className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
+                  </button>
+                </div>
+
+                <div className="space-y-2 sm:space-y-3">
+                  {column.tasks.map((task) => (
+                    <div key={task.id} className="relative">
+                      <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
+                      <div
+                        draggable
+                        onDragStart={() => handleDragStart(task, column.id)}
+                        onClick={() => setSelectedTask(task)}
+                        className="relative bg-white p-3 sm:p-4 border-2 sm:border-4 border-black hover:border-orange-500 transition cursor-pointer active:top-1 active:left-1"
+                      >
+                        <h4 className="font-bold text-gray-800 mb-2 sm:mb-3 text-[8px] sm:text-xs break-words" style={pixelFontStyle}>{task.title}</h4>
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-500 border-2 border-black flex items-center justify-center text-white font-bold text-[8px] sm:text-xs flex-shrink-0" style={pixelFontStyle}>
+                            {task.assignee[0]}
+                          </div>
+                          <span className="text-[8px] sm:text-xs truncate text-gray-800" style={pixelFontStyle}>{task.assignee}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="relative">
+                    <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
+                    <button className="relative w-full py-3 sm:py-4 border-2 sm:border-4 border-dashed border-black bg-white hover:bg-orange-50 transition flex items-center justify-center gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+                      <Plus className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
+                      ADD QUEST
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+          <div className="w-full lg:w-80 lg:flex-shrink-0 relative">
+            <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
+            <button className="relative w-full h-24 sm:h-32 border-2 sm:border-4 border-dashed border-black bg-white hover:bg-orange-50 transition flex items-center justify-center gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" style={{ strokeWidth: 3 }} />
+              NEW COLUMN
             </button>
           </div>
         </div>
       </div>
 
-      {/* 칸반 보드 */}
-      <div className="p-6">
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          {columns.map((column) => (
-            <div
-              key={column.id}
-              onDragOver={handleDragOver}
-              onDrop={() => handleDrop(column.id)}
-              className="flex-shrink-0 w-80 bg-gray-100 rounded-lg p-4"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-800 flex items-center gap-2">
-                  {column.title}
-                  <span className="text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
-                    {column.tasks.length}
-                  </span>
-                </h3>
-                <button className="text-gray-600 hover:text-gray-800">
-                  <MoreVertical className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                {column.tasks.map((task) => (
-                  <div
-                    key={task.id}
-                    draggable
-                    onDragStart={() => handleDragStart(task, column.id)}
-                    className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition cursor-move"
-                  >
-                    <h4 className="font-medium text-gray-800 mb-2">{task.title}</h4>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs">
-                          {task.assignee[0]}
-                        </div>
-                        <span className="text-sm text-gray-600">{task.assignee}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <button className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-gray-400 hover:text-gray-600 transition flex items-center justify-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  카드 추가
-                </button>
-              </div>
-            </div>
-          ))}
-          <button className="flex-shrink-0 w-80 h-32 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 text-gray-500 hover:border-gray-400 hover:text-gray-600 transition flex items-center justify-center gap-2">
-            <Plus className="w-5 h-5" />
-            새 컬럼 추가
-          </button>
-        </div>
-      </div>
+      {showUserProfile && <UserProfileModal user={userProfile} onClose={() => setShowUserProfile(false)} />}
+      {selectedTask && <TaskDetailModal task={selectedTask} onClose={() => setSelectedTask(null)} />}
     </div>
   );
 };
 
-// 메인 앱
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   return (
-    <div>
-      {!isLoggedIn ? (
-        <AuthPage onLogin={() => setIsLoggedIn(true)} />
-      ) : (
-        <MainDashboard />
-      )}
-    </div>
+    <>
+      <style>
+        {`
+          @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+          
+          * {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+          }
+          
+          ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+          }
+          
+          ::-webkit-scrollbar-track {
+            background: #f3f4f6;
+            border: 2px solid #000;
+          }
+          
+          ::-webkit-scrollbar-thumb {
+            background: #f97316;
+            border: 2px solid #000;
+          }
+          
+          ::-webkit-scrollbar-thumb:hover {
+            background: #ea580c;
+          }
+        `}
+      </style>
+      <div>
+        {!isLoggedIn ? (
+          <AuthPage onLogin={() => setIsLoggedIn(true)} />
+        ) : (
+          <MainDashboard />
+        )}
+      </div>
+    </>
   );
 };
 
