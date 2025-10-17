@@ -53,10 +53,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
       <div className="bg-orange-500 rounded-none p-2 w-full max-w-md relative z-10 shadow-2xl border-4 sm:border-8 border-black" style={{ boxShadow: '0 8px 0 #000' }}>
         <div className="bg-white border-2 sm:border-4 border-black p-4 sm:p-6">
           <h1 className="text-lg sm:text-2xl font-bold text-orange-600 mb-2 text-center" style={{ ...pixelFontStyle, textShadow: '3px 3px 0 #000' }}>
-            KANBAN QUEST
+            weAlists
           </h1>
           <p className="text-[8px] sm:text-xs text-gray-800 mb-4 sm:mb-6 text-center" style={pixelFontStyle}>
-            {isLogin ? 'INSERT COIN' : 'NEW PLAYER'}
+            {isLogin ? 'INSERT ACCOUNT' : 'NEW PLAYER'}
           </p>
 
           <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
@@ -85,7 +85,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
                 className="relative w-full bg-orange-500 text-white py-3 sm:py-4 border-2 sm:border-4 border-black font-bold hover:bg-orange-600 transition text-[10px] sm:text-sm active:top-1 active:left-1"
                 style={pixelFontStyle}
               >
-                {isLogin ? 'START GAME' : 'CREATE HERO'}
+                {isLogin ? 'LOG IN' : 'CREATE HERO'}
               </button>
             </div>
           </div>
@@ -139,7 +139,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
               onClick={() => setIsLogin(!isLogin)}
               className="text-orange-600 hover:text-orange-700 underline"
             >
-              {isLogin ? 'NEW GAME?' : 'CONTINUE?'}
+              {isLogin ? 'CREATE ACCOUNT?' : 'CONTINUE?'}
             </button>
           </p>
         </div>
@@ -481,7 +481,7 @@ const MainDashboard: React.FC = () => {
         backgroundSize: '20px 20px'
       }}></div>
 
-      <header className="bg-orange-500 border-b-4 sm:border-b-8 border-black px-3 sm:px-6 py-2 sm:py-4 relative" style={{ boxShadow: '0 4px 0 #000' }}>
+      <header className="bg-orange-500 border-b-4 sm:border-b-8 border-black px-3 sm:px-6 py-2 sm:py-4 relative z-20" style={{ boxShadow: '0 4px 0 #000' }}>
         <div className="flex items-center justify-between relative z-10">
           <div className="flex items-center gap-2 sm:gap-4">
             <div className="bg-white border-2 sm:border-4 border-black px-2 sm:px-4 py-1 sm:py-2" style={{ boxShadow: '2px 2px 0 #000, 4px 4px 0 #000' }}>
@@ -502,7 +502,7 @@ const MainDashboard: React.FC = () => {
                 <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
               </button>
               {showWorkspaceMenu && (
-                <div className="absolute top-full left-0 mt-2 w-48 sm:w-64 bg-white border-2 sm:border-4 border-black z-20" style={{ boxShadow: '4px 4px 0 #000' }}>
+                <div className="absolute top-full left-0 mt-2 w-48 sm:w-64 bg-white border-2 sm:border-4 border-black z-50" style={{ boxShadow: '4px 4px 0 #000' }}>
                   {workspaces.map((workspace) => (
                     <button
                       key={workspace}
@@ -545,7 +545,7 @@ const MainDashboard: React.FC = () => {
               <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
             </button>
             {showUserMenu && (
-              <div className="absolute top-full right-0 mt-2 w-48 sm:w-56 bg-white border-2 sm:border-4 border-black z-20" style={{ boxShadow: '4px 4px 0 #000' }}>
+              <div className="absolute top-full right-0 mt-2 w-48 sm:w-56 bg-white border-2 sm:border-4 border-black z-50" style={{ boxShadow: '4px 4px 0 #000' }}>
                 <div className="px-3 sm:px-4 py-2 sm:py-3 border-b-2 sm:border-b-4 border-black bg-orange-500 text-white">
                   <p className="font-bold text-[8px] sm:text-xs" style={pixelFontStyle}>PLAYER1</p>
                   <p className="text-[8px] sm:text-xs mt-1" style={pixelFontStyle}>LV.99</p>
@@ -560,12 +560,9 @@ const MainDashboard: React.FC = () => {
                 >
                   PROFILE
                 </button>
-                <button className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-orange-100 transition border-b-2 border-gray-200 text-[8px] sm:text-xs" style={pixelFontStyle}>
-                  TEAM
-                </button>
                 <div className="border-t-2 sm:border-t-4 border-black"></div>
                 <button className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left bg-red-500 hover:bg-red-600 transition text-white text-[8px] sm:text-xs" style={pixelFontStyle}>
-                  GAME OVER
+                  LOG OUT
                 </button>
               </div>
             )}
@@ -606,7 +603,7 @@ const MainDashboard: React.FC = () => {
 
       <div className="bg-white border-b-2 sm:border-b-4 border-black px-3 sm:px-6 py-2 sm:py-3 overflow-x-auto">
         <div className="flex items-center gap-2 sm:gap-4 min-w-max">
-          <span className="text-[8px] sm:text-xs text-gray-800 font-bold" style={pixelFontStyle}>STAGE:</span>
+          <span className="text-[8px] sm:text-xs text-gray-800 font-bold" style={pixelFontStyle}>PROJECT:</span>
           <div className="flex gap-2 flex-nowrap">
             {projects.map((project, idx) => (
               <div key={project} className="relative flex-shrink-0">
