@@ -2,11 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 폰트 import */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* 레트로 테마 폰트 */
+.theme-retro {
+  font-family: 'Press Start 2P', cursive;
+}
+
+.theme-retro * {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* 모던 테마 폰트 */
+.theme-modern {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* 다크 테마 폰트 */
+.theme-dark {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.theme-retro ::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border: 2px solid #000;
+}
+
+.theme-retro ::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border: 2px solid #000;
+}
+
+.theme-retro ::-webkit-scrollbar-thumb:hover {
+  background: #ea580c;
+}
+
+.theme-modern ::-webkit-scrollbar-track {
+  background: #f9fafb;
+}
+
+.theme-modern ::-webkit-scrollbar-thumb {
+  background: #2563eb;
+  border-radius: 6px;
+}
+
+.theme-modern ::-webkit-scrollbar-thumb:hover {
+  background: #1d4ed8;
+}
+
+.theme-dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.theme-dark ::-webkit-scrollbar-thumb {
+  background: #9333ea;
+  border-radius: 6px;
+}
+
+.theme-dark ::-webkit-scrollbar-thumb:hover {
+  background: #7e22ce;
 }

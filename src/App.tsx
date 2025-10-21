@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Menu, User, ChevronDown, Plus, MoreVertical, X, Calendar, Tag, MessageSquare, Send } from 'lucide-react';
 
+
+import { ThemeProvider } from './contexts/ThemeContext';
+import ThemeSelector from './components/common/ThemeSelector';
+
 // Types
 interface Task {
   id: number;
@@ -52,10 +56,10 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
 
       <div className="bg-orange-500 rounded-none p-2 w-full max-w-md relative z-10 shadow-2xl border-4 sm:border-8 border-black" style={{ boxShadow: '0 8px 0 #000' }}>
         <div className="bg-white border-2 sm:border-4 border-black p-4 sm:p-6">
-          <h1 className="text-lg sm:text-2xl font-bold text-orange-600 mb-2 text-center" style={{ ...pixelFontStyle, textShadow: '3px 3px 0 #000' }}>
+          <h1 className="text-lg sm:text-2xl font-bold text-orange-600 mb-2 text-center" style={{ textShadow: '3px 3px 0 #000' }}>
             weAlists
           </h1>
-          <p className="text-[8px] sm:text-xs text-gray-800 mb-4 sm:mb-6 text-center" style={pixelFontStyle}>
+          <p className="text-[8px] sm:text-xs text-gray-800 mb-4 sm:mb-6 text-center" >
             {isLogin ? 'INSERT ACCOUNT' : 'NEW PLAYER'}
           </p>
 
@@ -66,7 +70,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
                 type="email"
                 placeholder="EMAIL"
                 className="relative w-full px-3 sm:px-4 py-2 sm:py-3 border-2 sm:border-4 border-black bg-white text-[8px] sm:text-sm focus:outline-none focus:ring-4 focus:ring-orange-400"
-                style={pixelFontStyle}
+                
               />
             </div>
             <div className="relative">
@@ -75,7 +79,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
                 type="password"
                 placeholder="PASSWORD"
                 className="relative w-full px-3 sm:px-4 py-2 sm:py-3 border-2 sm:border-4 border-black bg-white text-[8px] sm:text-sm focus:outline-none focus:ring-4 focus:ring-orange-400"
-                style={pixelFontStyle}
+                
               />
             </div>
             <div className="relative">
@@ -83,7 +87,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
               <button
                 onClick={onLogin}
                 className="relative w-full bg-orange-500 text-white py-3 sm:py-4 border-2 sm:border-4 border-black font-bold hover:bg-orange-600 transition text-[10px] sm:text-sm active:top-1 active:left-1"
-                style={pixelFontStyle}
+                
               >
                 {isLogin ? 'LOG IN' : 'CREATE HERO'}
               </button>
@@ -95,7 +99,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
               <div className="w-full border-t-2 sm:border-t-4 border-dashed border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-[8px] sm:text-xs">
-              <span className="px-2 bg-white text-gray-800 border-2 sm:border-4 border-gray-300" style={pixelFontStyle}>OR</span>
+              <span className="px-2 bg-white text-gray-800 border-2 sm:border-4 border-gray-300" >OR</span>
             </div>
           </div>
 
@@ -107,7 +111,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
                 className="relative w-full flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 border-2 sm:border-4 border-black bg-white hover:bg-gray-50 transition active:top-1 active:left-1"
               >
                 <div className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 border-2 border-black flex-shrink-0"></div>
-                <span className="font-bold text-[8px] sm:text-xs" style={pixelFontStyle}>GOOGLE</span>
+                <span className="font-bold text-[8px] sm:text-xs" >GOOGLE</span>
               </button>
             </div>
 
@@ -118,7 +122,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
                 className="relative w-full flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 border-2 sm:border-4 border-black bg-white hover:bg-gray-50 transition active:top-1 active:left-1"
               >
                 <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gray-800 border-2 border-black flex-shrink-0"></div>
-                <span className="font-bold text-[8px] sm:text-xs" style={pixelFontStyle}>GITHUB</span>
+                <span className="font-bold text-[8px] sm:text-xs" >GITHUB</span>
               </button>
             </div>
 
@@ -129,12 +133,12 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
                 className="relative w-full flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 border-2 sm:border-4 border-black bg-yellow-400 hover:bg-yellow-500 transition active:top-1 active:left-1"
               >
                 <div className="w-4 h-4 sm:w-5 sm:h-5 bg-yellow-500 border-2 border-black flex-shrink-0"></div>
-                <span className="font-bold text-[8px] sm:text-xs" style={pixelFontStyle}>KAKAO</span>
+                <span className="font-bold text-[8px] sm:text-xs" >KAKAO</span>
               </button>
             </div>
           </div>
 
-          <p className="mt-4 sm:mt-6 text-center text-[8px] sm:text-xs" style={pixelFontStyle}>
+          <p className="mt-4 sm:mt-6 text-center text-[8px] sm:text-xs" >
             <button
               onClick={() => setIsLogin(!isLogin)}
               className="text-orange-600 hover:text-orange-700 underline"
@@ -158,7 +162,7 @@ const UserProfileModal: React.FC<{ user: UserProfile; onClose: () => void }> = (
         <div className="absolute top-2 left-2 w-full h-full bg-black"></div>
         <div className="relative bg-white border-4 border-black p-6">
           <div className="flex items-center justify-between mb-6 pb-4 border-b-4 border-black">
-            <h2 className="text-sm sm:text-base font-bold" style={pixelFontStyle}>PLAYER INFO</h2>
+            <h2 className="text-sm sm:text-base font-bold" >PLAYER INFO</h2>
             <button onClick={onClose} className="bg-red-500 border-2 border-black p-2 hover:bg-red-600">
               <X className="w-4 h-4 text-white" style={{ strokeWidth: 3 }} />
             </button>
@@ -166,13 +170,13 @@ const UserProfileModal: React.FC<{ user: UserProfile; onClose: () => void }> = (
 
           <div className="space-y-4">
             <div className="flex justify-center mb-6">
-              <div className="w-24 h-24 bg-orange-500 border-4 border-black flex items-center justify-center text-white text-3xl font-bold" style={pixelFontStyle}>
+              <div className="w-24 h-24 bg-orange-500 border-4 border-black flex items-center justify-center text-white text-3xl font-bold" >
                 {user.name[0]}
               </div>
             </div>
 
             <div>
-              <label className="block text-[8px] sm:text-xs mb-2 text-gray-600" style={pixelFontStyle}>NAME:</label>
+              <label className="block text-[8px] sm:text-xs mb-2 text-gray-600" >NAME:</label>
               <div className="relative">
                 <div className="absolute -top-1 -left-1 w-full h-full bg-black"></div>
                 <input
@@ -180,13 +184,13 @@ const UserProfileModal: React.FC<{ user: UserProfile; onClose: () => void }> = (
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="relative w-full px-3 py-2 border-2 border-black bg-white text-xs"
-                  style={pixelFontStyle}
+                  
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[8px] sm:text-xs mb-2 text-gray-600" style={pixelFontStyle}>EMAIL:</label>
+              <label className="block text-[8px] sm:text-xs mb-2 text-gray-600" >EMAIL:</label>
               <div className="relative">
                 <div className="absolute -top-1 -left-1 w-full h-full bg-black"></div>
                 <input
@@ -194,31 +198,31 @@ const UserProfileModal: React.FC<{ user: UserProfile; onClose: () => void }> = (
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="relative w-full px-3 py-2 border-2 border-black bg-white text-xs"
-                  style={pixelFontStyle}
+                  
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[8px] sm:text-xs mb-2 text-gray-600" style={pixelFontStyle}>LEVEL:</label>
+              <label className="block text-[8px] sm:text-xs mb-2 text-gray-600" >LEVEL:</label>
               <div className="flex items-center gap-2">
                 <div className="flex-1 bg-gray-200 border-2 border-black h-6">
                   <div className="bg-orange-500 h-full border-r-2 border-black" style={{ width: `${user.level}%` }}></div>
                 </div>
-                <span className="text-xs font-bold" style={pixelFontStyle}>{user.level}</span>
+                <span className="text-xs font-bold" >{user.level}</span>
               </div>
             </div>
 
             <div className="flex gap-2 pt-4">
               <div className="relative flex-1">
                 <div className="absolute top-1 left-1 w-full h-full bg-orange-700"></div>
-                <button className="relative w-full bg-orange-500 text-white py-3 border-2 border-black hover:bg-orange-600 transition text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+                <button className="relative w-full bg-orange-500 text-white py-3 border-2 border-black hover:bg-orange-600 transition text-xs active:top-1 active:left-1" >
                   SAVE
                 </button>
               </div>
               <div className="relative flex-1">
                 <div className="absolute top-1 left-1 w-full h-full bg-gray-400"></div>
-                <button onClick={onClose} className="relative w-full bg-gray-300 py-3 border-2 border-black hover:bg-gray-400 transition text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+                <button onClick={onClose} className="relative w-full bg-gray-300 py-3 border-2 border-black hover:bg-gray-400 transition text-xs active:top-1 active:left-1" >
                   CANCEL
                 </button>
               </div>
@@ -256,12 +260,12 @@ const TaskDetailModal: React.FC<{ task: Task; onClose: () => void }> = ({ task, 
         <div className="relative bg-white border-4 border-black p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
           <div className="flex items-start justify-between mb-4 pb-4 border-b-4 border-black">
             <div className="flex-1 pr-4">
-              <h2 className="text-xs sm:text-base font-bold mb-2 break-words" style={pixelFontStyle}>{task.title}</h2>
+              <h2 className="text-xs sm:text-base font-bold mb-2 break-words" >{task.title}</h2>
               <div className="flex items-center gap-2 mt-3">
-                <div className="w-8 h-8 bg-orange-500 border-2 border-black flex items-center justify-center text-white text-xs font-bold" style={pixelFontStyle}>
+                <div className="w-8 h-8 bg-orange-500 border-2 border-black flex items-center justify-center text-white text-xs font-bold" >
                   {task.assignee[0]}
                 </div>
-                <span className="text-[8px] sm:text-xs" style={pixelFontStyle}>{task.assignee}</span>
+                <span className="text-[8px] sm:text-xs" >{task.assignee}</span>
               </div>
             </div>
             <button onClick={onClose} className="bg-red-500 border-2 border-black p-2 hover:bg-red-600 flex-shrink-0">
@@ -271,40 +275,40 @@ const TaskDetailModal: React.FC<{ task: Task; onClose: () => void }> = ({ task, 
 
           <div className="space-y-4 mb-6">
             <div>
-              <label className="flex items-center gap-2 text-[8px] sm:text-xs mb-2 text-gray-600" style={pixelFontStyle}>
+              <label className="flex items-center gap-2 text-[8px] sm:text-xs mb-2 text-gray-600" >
                 <Calendar className="w-4 h-4" />
                 DUE DATE:
               </label>
               <div className="relative">
                 <div className="absolute -top-1 -left-1 w-full h-full bg-black"></div>
-                <div className="relative px-3 py-2 border-2 border-black bg-gray-50 text-xs" style={pixelFontStyle}>
+                <div className="relative px-3 py-2 border-2 border-black bg-gray-50 text-xs" >
                   2025-10-25
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="flex items-center gap-2 text-[8px] sm:text-xs mb-2 text-gray-600" style={pixelFontStyle}>
+              <label className="flex items-center gap-2 text-[8px] sm:text-xs mb-2 text-gray-600" >
                 <Tag className="w-4 h-4" />
                 PRIORITY:
               </label>
               <div className="relative inline-block">
                 <div className="absolute top-1 left-1 w-full h-full bg-red-700"></div>
-                <div className="relative px-3 py-2 border-2 border-black bg-red-500 text-white text-xs" style={pixelFontStyle}>
+                <div className="relative px-3 py-2 border-2 border-black bg-red-500 text-white text-xs" >
                   HIGH
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="text-[8px] sm:text-xs mb-2 text-gray-600 block" style={pixelFontStyle}>
+              <label className="text-[8px] sm:text-xs mb-2 text-gray-600 block" >
                 DESCRIPTION:
               </label>
               <div className="relative">
                 <div className="absolute -top-1 -left-1 w-full h-full bg-black"></div>
                 <textarea
                   className="relative w-full px-3 py-2 border-2 border-black bg-gray-50 text-xs min-h-24"
-                  style={pixelFontStyle}
+                  
                   defaultValue="This is a detailed description of the task."
                 />
               </div>
@@ -314,7 +318,7 @@ const TaskDetailModal: React.FC<{ task: Task; onClose: () => void }> = ({ task, 
           <div className="border-t-4 border-black pt-4">
             <div className="flex items-center gap-2 mb-4">
               <MessageSquare className="w-4 h-4" style={{ strokeWidth: 3 }} />
-              <h3 className="text-[8px] sm:text-xs font-bold" style={pixelFontStyle}>
+              <h3 className="text-[8px] sm:text-xs font-bold" >
                 COMMENTS ({comments.length})
               </h3>
             </div>
@@ -325,15 +329,15 @@ const TaskDetailModal: React.FC<{ task: Task; onClose: () => void }> = ({ task, 
                   <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
                   <div className="relative bg-white border-2 border-black p-3">
                     <div className="flex items-start gap-2">
-                      <div className="w-6 h-6 bg-orange-500 border-2 border-black flex items-center justify-center text-white text-[8px] font-bold flex-shrink-0" style={pixelFontStyle}>
+                      <div className="w-6 h-6 bg-orange-500 border-2 border-black flex items-center justify-center text-white text-[8px] font-bold flex-shrink-0" >
                         {comment.author[0]}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-[8px] font-bold" style={pixelFontStyle}>{comment.author}</span>
-                          <span className="text-[8px] text-gray-500" style={pixelFontStyle}>{comment.timestamp}</span>
+                          <span className="text-[8px] font-bold" >{comment.author}</span>
+                          <span className="text-[8px] text-gray-500" >{comment.timestamp}</span>
                         </div>
-                        <p className="text-[8px] sm:text-xs break-words" style={pixelFontStyle}>{comment.content}</p>
+                        <p className="text-[8px] sm:text-xs break-words" >{comment.content}</p>
                       </div>
                     </div>
                   </div>
@@ -351,7 +355,7 @@ const TaskDetailModal: React.FC<{ task: Task; onClose: () => void }> = ({ task, 
                   onKeyPress={(e) => e.key === 'Enter' && handleAddComment()}
                   placeholder="ADD COMMENT..."
                   className="flex-1 px-2 py-1 border-2 border-black text-[8px] sm:text-xs"
-                  style={pixelFontStyle}
+                  
                 />
                 <button
                   onClick={handleAddComment}
@@ -366,13 +370,13 @@ const TaskDetailModal: React.FC<{ task: Task; onClose: () => void }> = ({ task, 
           <div className="flex gap-2 mt-6 pt-4 border-t-4 border-black">
             <div className="relative flex-1">
               <div className="absolute top-1 left-1 w-full h-full bg-orange-700"></div>
-              <button className="relative w-full bg-orange-500 text-white py-3 border-2 border-black hover:bg-orange-600 transition text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+              <button className="relative w-full bg-orange-500 text-white py-3 border-2 border-black hover:bg-orange-600 transition text-xs active:top-1 active:left-1" >
                 SAVE
               </button>
             </div>
             <div className="relative">
               <div className="absolute top-1 left-1 w-full h-full bg-red-700"></div>
-              <button className="relative bg-red-500 text-white px-4 py-3 border-2 border-black hover:bg-red-600 transition text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+              <button className="relative bg-red-500 text-white px-4 py-3 border-2 border-black hover:bg-red-600 transition text-xs active:top-1 active:left-1" >
                 DELETE
               </button>
             </div>
@@ -489,13 +493,13 @@ const MainDashboard: React.FC = () => {
                 KANBAN
               </h1>
             </div>
-            
+             <ThemeSelector />
             <div className="relative hidden md:block">
               <div className="absolute top-1 left-1 w-full h-full bg-black"></div>
               <button
                 onClick={() => setShowWorkspaceMenu(!showWorkspaceMenu)}
                 className="relative flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-2 bg-white border-2 sm:border-4 border-black hover:bg-gray-100 transition text-[8px] sm:text-xs active:top-1 active:left-1"
-                style={pixelFontStyle}
+                
               >
                 <Menu className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
                 <span className="hidden lg:inline">{selectedWorkspace}</span>
@@ -511,13 +515,13 @@ const MainDashboard: React.FC = () => {
                         setShowWorkspaceMenu(false);
                       }}
                       className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-orange-100 transition border-b-2 border-gray-200 last:border-b-0 text-[8px] sm:text-xs"
-                      style={pixelFontStyle}
+                      
                     >
                       {workspace}
                     </button>
                   ))}
                   <div className="border-t-2 sm:border-t-4 border-black"></div>
-                  <button className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left bg-orange-500 text-white hover:bg-orange-600 transition flex items-center gap-2 text-[8px] sm:text-xs" style={pixelFontStyle}>
+                  <button className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left bg-orange-500 text-white hover:bg-orange-600 transition flex items-center gap-2 text-[8px] sm:text-xs" >
                     <Plus className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
                     NEW WORLD
                   </button>
@@ -538,7 +542,7 @@ const MainDashboard: React.FC = () => {
             <button
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="relative flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 bg-white border-2 sm:border-4 border-black hover:bg-gray-100 transition text-[8px] sm:text-xs active:top-1 active:left-1"
-              style={pixelFontStyle}
+              
             >
               <User className="w-4 h-4 sm:w-5 sm:h-5" style={{ strokeWidth: 3 }} />
               <span className="hidden sm:inline">PLAYER1</span>
@@ -547,8 +551,8 @@ const MainDashboard: React.FC = () => {
             {showUserMenu && (
               <div className="absolute top-full right-0 mt-2 w-48 sm:w-56 bg-white border-2 sm:border-4 border-black z-50" style={{ boxShadow: '4px 4px 0 #000' }}>
                 <div className="px-3 sm:px-4 py-2 sm:py-3 border-b-2 sm:border-b-4 border-black bg-orange-500 text-white">
-                  <p className="font-bold text-[8px] sm:text-xs" style={pixelFontStyle}>PLAYER1</p>
-                  <p className="text-[8px] sm:text-xs mt-1" style={pixelFontStyle}>LV.99</p>
+                  <p className="font-bold text-[8px] sm:text-xs" >PLAYER1</p>
+                  <p className="text-[8px] sm:text-xs mt-1" >LV.99</p>
                 </div>
                 <button 
                   onClick={() => {
@@ -556,12 +560,12 @@ const MainDashboard: React.FC = () => {
                     setShowUserMenu(false);
                   }}
                   className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-orange-100 transition border-b-2 border-gray-200 text-[8px] sm:text-xs" 
-                  style={pixelFontStyle}
+                  
                 >
                   PROFILE
                 </button>
                 <div className="border-t-2 sm:border-t-4 border-black"></div>
-                <button className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left bg-red-500 hover:bg-red-600 transition text-white text-[8px] sm:text-xs" style={pixelFontStyle}>
+                <button className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left bg-red-500 hover:bg-red-600 transition text-white text-[8px] sm:text-xs" >
                   LOG OUT
                 </button>
               </div>
@@ -574,13 +578,13 @@ const MainDashboard: React.FC = () => {
         <div className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-50" onClick={() => setShowMobileMenu(false)}>
           <div className="bg-white border-4 border-black w-64 h-full p-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xs font-bold" style={pixelFontStyle}>MENU</h2>
+              <h2 className="text-xs font-bold" >MENU</h2>
               <button onClick={() => setShowMobileMenu(false)} className="bg-red-500 border-2 border-black p-1">
                 <X className="w-4 h-4 text-white" style={{ strokeWidth: 3 }} />
               </button>
             </div>
             <div className="space-y-2">
-              <p className="text-[8px] text-gray-600 mb-2" style={pixelFontStyle}>WORKSPACES:</p>
+              <p className="text-[8px] text-gray-600 mb-2" >WORKSPACES:</p>
               {workspaces.map((workspace) => (
                 <button
                   key={workspace}
@@ -591,7 +595,7 @@ const MainDashboard: React.FC = () => {
                   className={`w-full px-3 py-2 text-left border-2 border-black text-[8px] ${
                     selectedWorkspace === workspace ? 'bg-orange-500 text-white' : 'bg-white hover:bg-gray-100'
                   }`}
-                  style={pixelFontStyle}
+                  
                 >
                   {workspace}
                 </button>
@@ -603,7 +607,7 @@ const MainDashboard: React.FC = () => {
 
       <div className="bg-white border-b-2 sm:border-b-4 border-black px-3 sm:px-6 py-2 sm:py-3 overflow-x-auto">
         <div className="flex items-center gap-2 sm:gap-4 min-w-max">
-          <span className="text-[8px] sm:text-xs text-gray-800 font-bold" style={pixelFontStyle}>PROJECT:</span>
+          <span className="text-[8px] sm:text-xs text-gray-800 font-bold" >PROJECT:</span>
           <div className="flex gap-2 flex-nowrap">
             {projects.map((project, idx) => (
               <div key={project} className="relative flex-shrink-0">
@@ -615,7 +619,7 @@ const MainDashboard: React.FC = () => {
                       ? 'bg-orange-500 text-white'
                       : 'bg-white text-gray-800 hover:bg-gray-100'
                   }`}
-                  style={pixelFontStyle}
+                  
                 >
                   {idx + 1}-{project}
                 </button>
@@ -623,7 +627,7 @@ const MainDashboard: React.FC = () => {
             ))}
             <div className="relative flex-shrink-0">
               <div className="absolute top-1 left-1 w-full h-full bg-orange-700"></div>
-              <button className="relative px-2 sm:px-4 py-1 sm:py-2 bg-orange-500 text-white border-2 sm:border-4 border-black hover:bg-orange-600 transition flex items-center gap-1 sm:gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+              <button className="relative px-2 sm:px-4 py-1 sm:py-2 bg-orange-500 text-white border-2 sm:border-4 border-black hover:bg-orange-600 transition flex items-center gap-1 sm:gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" >
                 <Plus className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
                 NEW
               </button>
@@ -644,7 +648,7 @@ const MainDashboard: React.FC = () => {
               <div className="absolute top-1 left-1 w-full h-full bg-black"></div>
               <div className="relative border-2 sm:border-4 border-black p-3 sm:p-4 bg-white">
                 <div className="flex items-center justify-between mb-3 sm:mb-4 pb-2 border-b-2 sm:border-b-4 border-black">
-                  <h3 className="font-bold text-gray-800 flex items-center gap-2 text-[8px] sm:text-xs" style={pixelFontStyle}>
+                  <h3 className="font-bold text-gray-800 flex items-center gap-2 text-[8px] sm:text-xs" >
                     <span className={`w-3 h-3 sm:w-4 sm:h-4 ${columnColors[idx]} border-2 border-black`}></span>
                     {column.title}
                     <span className="bg-black text-white px-1 sm:px-2 py-1 border-2 border-black text-[8px] sm:text-xs">
@@ -666,19 +670,19 @@ const MainDashboard: React.FC = () => {
                         onClick={() => setSelectedTask(task)}
                         className="relative bg-white p-3 sm:p-4 border-2 sm:border-4 border-black hover:border-orange-500 transition cursor-pointer active:top-1 active:left-1"
                       >
-                        <h4 className="font-bold text-gray-800 mb-2 sm:mb-3 text-[8px] sm:text-xs break-words" style={pixelFontStyle}>{task.title}</h4>
+                        <h4 className="font-bold text-gray-800 mb-2 sm:mb-3 text-[8px] sm:text-xs break-words" >{task.title}</h4>
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-500 border-2 border-black flex items-center justify-center text-white font-bold text-[8px] sm:text-xs flex-shrink-0" style={pixelFontStyle}>
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-500 border-2 border-black flex items-center justify-center text-white font-bold text-[8px] sm:text-xs flex-shrink-0" >
                             {task.assignee[0]}
                           </div>
-                          <span className="text-[8px] sm:text-xs truncate text-gray-800" style={pixelFontStyle}>{task.assignee}</span>
+                          <span className="text-[8px] sm:text-xs truncate text-gray-800" >{task.assignee}</span>
                         </div>
                       </div>
                     </div>
                   ))}
                   <div className="relative">
                     <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
-                    <button className="relative w-full py-3 sm:py-4 border-2 sm:border-4 border-dashed border-black bg-white hover:bg-orange-50 transition flex items-center justify-center gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+                    <button className="relative w-full py-3 sm:py-4 border-2 sm:border-4 border-dashed border-black bg-white hover:bg-orange-50 transition flex items-center justify-center gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" >
                       <Plus className="w-3 h-3 sm:w-4 sm:h-4" style={{ strokeWidth: 3 }} />
                       ADD TASK
                     </button>
@@ -689,7 +693,7 @@ const MainDashboard: React.FC = () => {
           ))}
           <div className="w-full lg:w-80 lg:flex-shrink-0 relative">
             <div className="absolute top-1 left-1 w-full h-full bg-gray-300"></div>
-            <button className="relative w-full h-24 sm:h-32 border-2 sm:border-4 border-dashed border-black bg-white hover:bg-orange-50 transition flex items-center justify-center gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" style={pixelFontStyle}>
+            <button className="relative w-full h-24 sm:h-32 border-2 sm:border-4 border-dashed border-black bg-white hover:bg-orange-50 transition flex items-center justify-center gap-2 text-[8px] sm:text-xs active:top-1 active:left-1" >
               <Plus className="w-4 h-4 sm:w-5 sm:h-5" style={{ strokeWidth: 3 }} />
               NEW TICKET
             </button>
@@ -708,36 +712,7 @@ const App: React.FC = () => {
 
   return (
     <>
-      <style>
-        {`
-          @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-          
-          * {
-            image-rendering: pixelated;
-            image-rendering: -moz-crisp-edges;
-            image-rendering: crisp-edges;
-          }
-          
-          ::-webkit-scrollbar {
-            width: 12px;
-            height: 12px;
-          }
-          
-          ::-webkit-scrollbar-track {
-            background: #f3f4f6;
-            border: 2px solid #000;
-          }
-          
-          ::-webkit-scrollbar-thumb {
-            background: #f97316;
-            border: 2px solid #000;
-          }
-          
-          ::-webkit-scrollbar-thumb:hover {
-            background: #ea580c;
-          }
-        `}
-      </style>
+    <ThemeProvider>
       <div>
         {!isLoggedIn ? (
           <AuthPage onLogin={() => setIsLoggedIn(true)} />
@@ -745,6 +720,7 @@ const App: React.FC = () => {
           <MainDashboard />
         )}
       </div>
+      </ThemeProvider>
     </>
   );
 };
