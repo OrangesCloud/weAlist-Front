@@ -7,10 +7,10 @@ import {
 } from '../types/kanban';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzYxMTM5NDc3LCJpYXQiOjE3NjEwNTMwNzd9.Tyumo_rjgFprYmMQtvh87mx5hv4KO55RUwwKMv1CIPA"
 class TicketService {
   private getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem('auth_token');
+    // const token = localStorage.getItem('auth_token');
     return {
       'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` })

@@ -7,10 +7,11 @@ import {
 } from '../types/kanban';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxNzYxMTQwMTQyLCJpYXQiOjE3NjEwNTM3NDJ9.hLA-qgb4RfyEkSUM1Iymivp1GdxWzlRst34SNbAhznU"
 
 class WorkspaceService {
   private getAuthHeaders(): HeadersInit {
-    const token = localStorage.getItem('auth_token');
+    // const token = localStorage.getItem('auth_token');
     return {
       'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` })

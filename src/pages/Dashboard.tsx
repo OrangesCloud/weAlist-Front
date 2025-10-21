@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu, User, ChevronDown, Plus, MoreVertical, X } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import UserProfileModal from '../components/modals/UserProfileModal';
 import TaskDetailModal from '../components/modals/TaskDetailModal';
 import { UserProfile } from '../types';
+import workspaceService from '../services/workspaceService';
+import healthService from '../services/healthTest';
 
 interface Task {
   id: number;
@@ -110,6 +112,26 @@ const MainDashboard: React.FC = () => {
     setDraggedTask(null);
     setDraggedFromColumn(null);
   };
+
+  const initTest = async() => {
+     try {
+        //health test
+        const rs = await healthService.checkHealth();
+        console.log('✅ API Health Check:', rs); 
+      // Workspace ID 1번 조회
+      const workspaceData = await workspaceService.listWorkspaces({ limit: 20, offset: 0 });
+      console.log('Workspace:', workspaceData);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      console.error('❌ API Test failed:', errorMessage);
+    }
+  }
+
+    useEffect(() => {
+        initTest();
+    }, [])
+
+
 
   return (
     <div className={`min-h-screen ${theme.colors.background}`}>
