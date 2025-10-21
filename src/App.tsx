@@ -45,7 +45,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogin }) => {
             weAlists
           </h1>
           <p className={`${theme.font.size.xs} ${theme.colors.text} mb-4 sm:mb-6 text-center`}>
-            {isLogin ? 'INSERT ACCOUNT' : 'NEW ACCOUNT'}
+           INSERT ACCOUNT
           </p>
 
           <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">

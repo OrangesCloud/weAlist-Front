@@ -6,15 +6,11 @@ const ThemeSelector: React.FC = () => {
   const { theme, themeName, setTheme } = useTheme();
 
   const themeOptions = [
-    { name: 'retro' as const, label: 'RETRO', color: 'bg-orange-500' },
     { name: 'modern' as const, label: 'MODERN', color: 'bg-blue-600' },
   ];
 
   return (
     <div className="relative inline-block">
-      {theme.name === 'retro' && (
-        <div className="absolute top-1 left-1 w-full h-full bg-black"></div>
-      )}
       <div 
         className={`relative flex gap-1 sm:gap-2 p-1 ${theme.colors.secondary} ${theme.effects.cardBorderWidth} ${theme.colors.border} ${theme.effects.borderRadius}`} 
         style={theme.name === 'retro' ? { boxShadow: theme.effects.shadow } : { boxShadow: theme.effects.shadow }}

@@ -10,7 +10,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [themeName, setThemeName] = useState<ThemeName>('retro');
+  const [themeName, setThemeName] = useState<ThemeName>('modern');
   const theme = themes[themeName];
 
   // 테마 변경 시 body에 클래스 적용
