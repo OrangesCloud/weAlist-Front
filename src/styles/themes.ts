@@ -1,6 +1,6 @@
 export interface Theme {
   name: string;
-  cssClass: string; // 전역 CSS 클래스명 추가
+  cssClass: string;
   colors: {
     primary: string;
     primaryHover: string;
@@ -18,6 +18,16 @@ export interface Theme {
     borderWidth: string;
     cardBorderWidth: string;
     borderRadius: string;
+  };
+  font: {
+    family: string;
+    size: {
+      xs: string;
+      sm: string;
+      base: string;
+      lg: string;
+      xl: string;
+    };
   };
 }
 
@@ -43,6 +53,16 @@ export const retroTheme: Theme = {
     cardBorderWidth: 'border-2 sm:border-4',
     borderRadius: 'rounded-none',
   },
+  font: {
+    family: "'Press Start 2P', cursive",
+    size: {
+      xs: 'text-[8px] sm:text-xs',
+      sm: 'text-xs sm:text-sm',
+      base: 'text-sm sm:text-base',
+      lg: 'text-lg sm:text-xl',
+      xl: 'text-xl sm:text-2xl',
+    },
+  },
 };
 
 // 모던 깔끔한 테마
@@ -67,36 +87,22 @@ export const modernTheme: Theme = {
     cardBorderWidth: 'border',
     borderRadius: 'rounded-lg',
   },
-};
-
-// 다크 모드 테마
-export const darkTheme: Theme = {
-  name: 'dark',
-  cssClass: 'theme-dark',
-  colors: {
-    primary: 'bg-purple-600',
-    primaryHover: 'hover:bg-purple-700',
-    primaryDark: 'bg-purple-800',
-    secondary: 'bg-gray-800',
-    background: 'bg-gray-900',
-    card: 'bg-gray-800',
-    border: 'border-purple-500',
-    text: 'text-gray-100',
-    textSecondary: 'text-gray-400',
-  },
-  effects: {
-    shadow: '0 4px 6px rgba(0,0,0,0.5)',
-    headerShadow: '0 2px 8px rgba(0,0,0,0.3)',
-    borderWidth: 'border-2',
-    cardBorderWidth: 'border',
-    borderRadius: 'rounded-xl',
+  font: {
+    family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif",
+    size: {
+      xs: 'text-xs',
+      sm: 'text-sm',
+      base: 'text-base',
+      lg: 'text-lg',
+      xl: 'text-2xl',
+    },
   },
 };
 
+// 모든 테마 export
 export const themes = {
   retro: retroTheme,
   modern: modernTheme,
-  dark: darkTheme,
 };
 
 export type ThemeName = keyof typeof themes;

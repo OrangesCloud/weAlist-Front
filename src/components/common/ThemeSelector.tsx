@@ -8,7 +8,6 @@ const ThemeSelector: React.FC = () => {
   const themeOptions = [
     { name: 'retro' as const, label: 'RETRO', color: 'bg-orange-500' },
     { name: 'modern' as const, label: 'MODERN', color: 'bg-blue-600' },
-    { name: 'dark' as const, label: 'DARK', color: 'bg-purple-600' },
   ];
 
   return (

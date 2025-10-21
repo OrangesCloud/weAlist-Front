@@ -4,6 +4,14 @@ export interface Task {
   assignee: string;
   description?: string;
   dueDate?: string;
+  priority?: string;
+}
+
+export interface TaskComment {
+  id: number;
+  author: string;
+  content: string;
+  timestamp: string;
 }
 
 export interface Column {
@@ -12,20 +20,8 @@ export interface Column {
   tasks: Task[];
 }
 
-export interface Workspace {
-  id: string;
-  name: string;
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  workspaceId: string;
-}
-
-export interface User {
-  id: string;
+export interface UserProfile {
   name: string;
   email: string;
-  avatar?: string;
+  avatar: string;
 }
