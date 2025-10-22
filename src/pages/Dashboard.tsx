@@ -22,11 +22,14 @@ interface Column {
   tasks: Task[];
 }
 
-const MainDashboard: React.FC = () => {
+interface MainDashboardProps {
+  onLogout: () => void;
+}
+
+const MainDashboard: React.FC<MainDashboardProps> = ({ onLogout }) => {
   const { theme } = useTheme();
-  const [selectedWorkspace, setSelectedWorkspace] =
-    useState<string>("workspace1");
-  const [selectedProject, setSelectedProject] = useState<string>("WEB QUEST");
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string>("조직1");
+  const [selectedProject, setSelectedProject] = useState<string>("프로젝트1");
   const [showUserMenu, setShowUserMenu] = useState<boolean>(false);
   const [showWorkspaceMenu, setShowWorkspaceMenu] = useState<boolean>(false);
   const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
@@ -76,8 +79,8 @@ const MainDashboard: React.FC = () => {
     null
   );
 
-  const workspaces: string[] = ["workspace1", "workspace2", "workspace3"];
-  const projects: string[] = ["WEB QUEST", "MOBILE SAGA", "NEW FEATURE"];
+  const workspaces: string[] = ["조직1", "조직2", "조직3"];
+  const projects: string[] = ["프로젝트1", "프로젝트2", "프로젝트3"];
 
   const columnColors = [
     "bg-red-500",
@@ -233,7 +236,7 @@ const MainDashboard: React.FC = () => {
                 className="w-4 h-4 sm:w-5 sm:h-5"
                 style={{ strokeWidth: 3 }}
               />
-              <span className="hidden sm:inline">계정1</span>
+              <span className="hidden sm:inline">사용자A</span>
               <ChevronDown
                 className="w-3 h-3 sm:w-4 sm:h-4"
                 style={{ strokeWidth: 3 }}
@@ -247,7 +250,7 @@ const MainDashboard: React.FC = () => {
                 <div
                   className={`px-3 sm:px-4 py-2 sm:py-3 ${theme.effects.cardBorderWidth} ${theme.colors.border} border-t-0 border-l-0 border-r-0 ${theme.colors.primary} text-white`}
                 >
-                  <p className={`font-bold ${theme.font.size.xs}`}>계정1</p>
+                  <p className={`font-bold ${theme.font.size.xs}`}>사용자A</p>
                 </div>
                 <button
                   onClick={() => {
@@ -256,7 +259,7 @@ const MainDashboard: React.FC = () => {
                   }}
                   className={`w-full px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-orange-100 transition ${theme.effects.cardBorderWidth} ${theme.colors.border} border-t-0 border-l-0 border-r-0 ${theme.font.size.xs}`}
                 >
-                  PROFILE
+                  프로필
                 </button>
                 <div
                   className={`${theme.effects.cardBorderWidth} ${theme.colors.border} border-b-0 border-l-0 border-r-0`}
@@ -269,8 +272,9 @@ const MainDashboard: React.FC = () => {
                       ? "rounded-t-none"
                       : ""
                   }`}
+                  onClick={onLogout}
                 >
-                  LOG OUT
+                  로그아웃
                 </button>
               </div>
             )}
@@ -329,13 +333,8 @@ const MainDashboard: React.FC = () => {
         className={`${theme.colors.card} ${theme.effects.borderWidth} ${theme.colors.border} border-t-0 border-l-0 border-r-0 px-3 sm:px-6 py-2 sm:py-3 overflow-x-auto`}
       >
         <div className="flex items-center gap-2 sm:gap-4 min-w-max">
-          <span
-            className={`${theme.font.size.xs} ${theme.colors.text} font-bold`}
-          >
-            PROJECT:
-          </span>
           <div className="flex gap-2 flex-nowrap">
-            {projects.map((project, idx) => (
+            {projects.map((project) => (
               <div key={project} className="relative flex-shrink-0">
                 <button
                   onClick={() => setSelectedProject(project)}
@@ -349,7 +348,7 @@ const MainDashboard: React.FC = () => {
                       : `${theme.colors.secondary} ${theme.colors.text} hover:bg-gray-100`
                   }`}
                 >
-                  {idx + 1}-{project}
+                  {project}
                 </button>
               </div>
             ))}
