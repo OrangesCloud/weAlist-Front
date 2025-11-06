@@ -10,11 +10,11 @@ const AuthPage = lazy(() => import('./pages/Authpage'));
 const SelectGroupPage = lazy(() => import('./components/SelectGroupPage'));
 const MainDashboard = lazy(() => import('./pages/Dashboard'));
 
-const LoadingScreen = () => (
+const LoadingScreen = ({ msg = '로딩 중..' }) => (
   <div className="text-center min-h-screen flex items-center justify-center bg-gray-50">
     <div className="p-8 bg-white rounded-xl shadow-lg">
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-      <h1 className="text-xl font-medium text-gray-800">로딩 중...</h1>
+      <h1 className="text-xl font-medium text-gray-800">{msg}</h1>
     </div>
   </div>
 );
@@ -83,7 +83,7 @@ const App: React.FC = () => {
       );
     }
     if (appState === 'CREATE_WORKSPACE') {
-      return <LoadingScreen />;
+      return <LoadingScreen msg={loadingMessage || '작업 공간을 준비 중입니다...'} />;
     }
     if (appState === 'KANBAN' && currentGroupId && accessToken) {
       return (
