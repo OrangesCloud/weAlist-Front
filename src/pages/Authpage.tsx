@@ -1,16 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 
-// ⚠️ 백엔드 OAuth2 인증 시작 엔드포인트
-// VITE_REACT_APP_JAVA_API_URL이 'http://localhost:8080'을 가리킨다고 가정
-const GOOGLE_AUTH_URL = `http://localhost:8080/oauth2/authorization/google`;
+// 1. Base URL 결정 (dev.sh에서 주입된 값 또는 하드코딩된 배포 도메인)
+const BASE_DOMAIN = import.meta.env.VITE_API_BASE_URL || 'https://api.wealist.co.kr';
 
-// onLogin prop 제거 (TS6133 에러 해결)
+// 2. 로컬 개발 환경(development)일 경우에만 8080 포트를 붙입니다.
+// 이 조건문은 VITE_API_BASE_URL이 'http://localhost'일 때만 포트가 붙도록 보장합니다.
+// 배포 환경(production)에서는 포트가 붙지 않습니다.
+const OAUTH_BASE =
+  BASE_DOMAIN === 'http://localhost' || BASE_DOMAIN.includes('127.0.0.1')
+    ? `${BASE_DOMAIN}:8080`
+    : BASE_DOMAIN + '/api/users';
+
+// ⚠️ 백엔드 OAuth2 인증 시작 엔드포인트
+const GOOGLE_AUTH_URL = `${OAUTH_BASE}/oauth2/authorization/google`;
 const AuthPage: React.FC = () => {
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // 로그인 상태 체크: 이미 로그인되어 있으면 워크스페이스 선택 페이지로 이동
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    const userId = localStorage.getItem('userId');
+
+    // 토큰과 유저 ID가 모두 있을 때만 리다이렉트
+    if (accessToken && userId) {
+      // TODO: 나중에는 백엔드에 토큰 유효성 검증 API 호출하는 것이 더 좋음
+      navigate('/workspaces', { replace: true });
+    } else if (accessToken || userId) {
+      // 불완전한 인증 정보가 있으면 정리
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('nickName');
+      localStorage.removeItem('userEmail');
+    }
+  }, [navigate]);
 
   // Google 로그인 핸들러: 리다이렉션만 수행
   const handleGoogleLogin = () => {
@@ -18,7 +46,6 @@ const AuthPage: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // 🚀 백엔드가 제공한 OAuth2 시작 URL로 브라우저를 리다이렉션합니다.
       window.location.href = GOOGLE_AUTH_URL;
     } catch (e) {
       setIsLoading(false);
