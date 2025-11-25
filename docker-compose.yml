@@ -1,24 +1,31 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  # 웹 프론트엔드 서비스 정의
-  wealist-frontend:
-    # 현재 디렉토리의 Dockerfile을 사용하여 이미지를 빌드합니다.
-    build:
-      context: .
-      dockerfile: Dockerfile
+  frontend-dev:
+    # 로컬 개발에 필요한 환경을 위해 node 이미지를 직접 사용하거나,
+    # 개발용 Dockerfile(dev-dockerfile)을 분리하여 사용합니다.
+    # 여기서는 호스트 환경과 유사하게 실행하는 방식을 채택합니다.
+    image: node:20-alpine
 
-    # 컨테이너 포트 80(Nginx)을 호스트의 3000번 포트로 연결합니다.
+    # 💡 핫 리로딩을 위해 로컬 소스 코드를 컨테이너의 /app에 마운트
+    volumes:
+      - ./:/app
+      - /app/node_modules # 호스트의 node_modules는 무시 (컨테이너 내부 종속성 보존)
+
+    working_dir: /app
+
+    # 로컬 개발 서버 실행 명령 (Vite dev server)
+    command: pnpm run dev
+
+    # 포트 매핑: 호스트:컨테이너
     ports:
-      - "3000:80"
+      - '3000:3000'
 
-    # 컨테이너가 종료되더라도 항상 재시작하도록 설정합니다.
-    restart: always
-
-    # 컨테이너 이름을 명시적으로 지정
-    container_name: wealist-frontend-container
-
-    # (선택 사항) 빌드 시점에 환경 변수를 주입해야 할 경우 아래 환경 섹션을 사용합니다.
-    # environment:
-    #   - VITE_API_URL=http://backend-service:8080
-    #   - VITE_GO_API_URL=http://go-api:8000
+    # 💡 개발용 API 엔드포인트를 로컬에서 설정
+    environment:
+      - .env
+    networks:
+      - wealist-net
+networks:
+  wealist-net:
+    external: true # 외부에서 생성된 네트워크를 사용하도록 지정
