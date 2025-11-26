@@ -3,7 +3,7 @@ import React, { Suspense, lazy } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 // 💡 [수정] AuthProvider와 useAuth 훅을 가져옵니다.
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { Routes, Route, Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Loader2 } from 'lucide-react'; // 로딩 스피너 아이콘
 
 // Lazy load 페이지들 (이름 일관성 유지)
