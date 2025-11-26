@@ -6,8 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-# env section removed - values loaded from Parameter Store in steps
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,7 +14,7 @@ jobs:
         uses: actions/checkout@v4
 
       # ============================================
-      # 1. AWS Credentials 설정 (백엔드 공유 키 사용)
+      # 1. AWS Credentials 설정
       # ============================================
       - name: 🔐 Configure AWS Credentials (for all tasks)
         uses: aws-actions/configure-aws-credentials@v4
@@ -38,47 +36,54 @@ jobs:
         with:
           node-version: '20'
           cache: 'pnpm'
-          cache-dependency-path: 'pnpm-lock.yaml' # 📂 경로 수정됨
+          cache-dependency-path: 'pnpm-lock.yaml'
 
       # ============================================
-      # 3. SSM Parameter Store에서 ALB 도메인 조회
+      # 3. SSM Parameter Store에서 설정 조회 및 주입
       # ============================================
-      - name: 🌍 Fetch ALB Domain from SSM
+      - name: 🌍 Fetch Configuration from SSM for Vite
         run: |
-          # ALB 도메인 조회
-          ALB_DOMAIN=$(aws ssm get-parameter --name "/wealist/dev/alb/domain" --query "Parameter.Value" --output text)
+          echo "🌐 Fetching configuration from SSM Parameter Store..."
 
-          # GITHUB_ENV에 주입 (Vite 빌드에 사용)
+          # 1. ALB 도메인 조회 -> VITE_API_BASE_URL 설정
+          ALB_DOMAIN=$(aws ssm get-parameter --name "/wealist/dev/alb/domain" --query "Parameter.Value" --output text)
           echo "VITE_API_BASE_URL=https://$ALB_DOMAIN" >> $GITHUB_ENV
 
-          echo "✅ Fetched API Base URL: https://$ALB_DOMAIN"
+          # 2. GOOGLE_CLIENT_ID 조회 -> VITE_GOOGLE_CLIENT_ID 설정
+          GOOGLE_ID=$(aws ssm get-parameter --name "/wealist/dev/oauth/google_client_id" --query "Parameter.Value" --output text)
+          echo "VITE_GOOGLE_CLIENT_ID=$GOOGLE_ID" >> $GITHUB_ENV
+
+          echo "✅ API Base URL: https://$ALB_DOMAIN"
+          echo "✅ Google Client ID: $GOOGLE_ID"
 
       - name: 📦 Install Dependencies
-        run: pnpm install --frozen-lockfile # 📂 cd frontend 제거
+        run: pnpm install --frozen-lockfile
 
       # ============================================
       # 4. Build with Vite
       # ============================================
       - name: 🔨 Build with Vite
-        run: pnpm run build # 📂 cd frontend 제거
+        run: pnpm run build
 
       # ============================================
       # 5. Deploy & Invalidate Cache
-      # (나머지 S3/CloudFront 배포 로직은 최적화되어 있으므로 그대로 유지)
       # ============================================
       - name: ⬆️ Deploy to S3 (Optimized Cache Control Applied)
         run: |
+          # 1. 해시된 정적 파일: 1년 캐시 + immutable
           aws s3 sync ./dist s3://${{ secrets.FRONTEND_S3_BUCKET_NAME }}/ \
             --delete \
             --cache-control "public, max-age=31536000, immutable" \
             --exclude "index.html"
             
+          # 2. index.html: 캐시 비활성화 (no-store, must-revalidate)
           aws s3 cp ./dist/index.html s3://${{ secrets.FRONTEND_S3_BUCKET_NAME }}/index.html \
             --cache-control "no-cache, no-store, must-revalidate" \
             --content-type "text/html"
 
       - name: 🌐 Invalidate CloudFront Cache (Only for index.html)
         run: |
+          # CloudFront 캐시 무효화 요청을 index.html에만 적용
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.FRONTEND_CLOUDFRONT_ID }} \
             --paths "/index.html"

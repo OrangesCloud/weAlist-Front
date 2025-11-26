@@ -1,104 +1,106 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-// API 경로 설정 (경로 확인: src/api/apiConfig를 기준으로 접근)
-import { USER_REPO_API_URL } from '../api/apiConfig';
+import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+
+// 사용자 정보 전체 구조 정의
+interface UserInfo {
+  userId: string;
+  nickName?: string;
+  userEmail?: string;
+}
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  token: string | null;
-  nickName: string | null;
-  userEmail: string | null;
-  userId: string | null; // ✅ 1. 타입 정의 추가
-  logout: () => void;
   isLoading: boolean;
+  user: UserInfo | null; // UserInfo 타입 사용
+  login: (
+    accessToken: string,
+    refreshToken: string,
+    userId: string,
+    nickName: string,
+    userEmail: string,
+  ) => void; // 인자 확장
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// -----------------------------------------------------------------------------
+// Auth Provider
+// -----------------------------------------------------------------------------
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<UserInfo | null>(null);
+
+  useEffect(() => {
+    // 💡 초기 로드 시 localStorage에서 토큰 및 모든 사용자 정보 확인
+    const checkAuthStatus = () => {
+      const accessToken = localStorage.getItem('accessToken');
+      const userId = localStorage.getItem('userId');
+      const nickName = localStorage.getItem('nickName');
+      const userEmail = localStorage.getItem('userEmail');
+
+      // 토큰과 userId가 존재하면 인증된 것으로 간주
+      if (accessToken && userId) {
+        // 실제로는 여기서 백엔드에 토큰 유효성 검증 API 호출을 해야 함
+        setIsAuthenticated(true);
+        setUser({
+          userId: userId,
+          nickName: nickName || undefined,
+          userEmail: userEmail || undefined,
+        });
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+      setIsLoading(false);
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  const login = (
+    accessToken: string,
+    refreshToken: string,
+    userId: string,
+    nickName: string,
+    userEmail: string,
+  ) => {
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    localStorage.setItem('userId', userId);
+    localStorage.setItem('nickName', nickName);
+    localStorage.setItem('userEmail', userEmail);
+
+    setIsAuthenticated(true);
+    setUser({ userId, nickName, userEmail });
+  };
+
+  const logout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('nickName');
+    localStorage.removeItem('userEmail');
+
+    setIsAuthenticated(false);
+    setUser(null);
+  };
+
+  const value = useMemo(
+    () => ({ isAuthenticated, isLoading, user, login, logout }),
+    [isAuthenticated, isLoading, user],
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
+
+// -----------------------------------------------------------------------------
+// Hook
+// -----------------------------------------------------------------------------
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
-
-// App.tsx의 <Routes>와 BrowserRouter 사이에 위치해야 합니다.
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const navigate = useNavigate();
-  const [token, setToken] = useState<string | null>(null);
-  const [reToken, setReToken] = useState<string | null>(null);
-  const [nickName, setNickName] = useState<string | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null); // ✅ 2. State 추가
-  const [isLoading, setIsLoading] = useState(true);
-
-  // 1. 초기 로딩 시 localStorage에서 토큰 및 ID 로드
-  useEffect(() => {
-    const storedToken = localStorage.getItem('accessToken');
-    const storedReToken = localStorage.getItem('refreshToken');
-    const storedNickName = localStorage.getItem('nickName');
-    const storedUserEmail = localStorage.getItem('userEmail');
-    const storedUserId = localStorage.getItem('userId'); // ✅ 3. 로컬스토리지 읽기 추가
-    console.log(storedUserId);
-    if (storedToken && storedReToken && storedUserEmail) {
-      setToken(storedToken);
-      setNickName(storedNickName);
-      setUserEmail(storedUserEmail);
-      if (storedUserId) setUserId(storedUserId); // ✅ 4. State 복구
-    }
-    setIsLoading(false);
-  }, []);
-
-  // 3. 로그아웃 핸들러
-  const logout = useCallback(async () => {
-    // 백엔드 로그아웃 요청 (선택 사항)
-    if (token) {
-      try {
-        await fetch(`${USER_REPO_API_URL}/api/auth/logout`, {
-          // API 호출 경로 수정
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      } catch (e) {
-        console.error('Backend logout failed (proceeding with client-side cleanup)', e);
-      }
-    }
-
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('nickName');
-    localStorage.removeItem('userEmail');
-    localStorage.removeItem('userId'); // ✅ 5. 로그아웃 시 삭제
-    setToken(null);
-    setReToken(null);
-    setNickName(null);
-    setUserEmail(null);
-    setUserId(null); // ✅ 6. State 초기화
-    // 로그아웃 후 로그인 페이지로 이동
-    navigate('/', { replace: true });
-  }, [token, navigate]);
-
-  const value = {
-    isAuthenticated: !!token,
-    token,
-    reToken,
-    nickName,
-    userEmail,
-    userId, // ✅ 7. Context Value에 포함
-    logout,
-    isLoading,
-  };
-
-  // 💡 HACK: OAuthRedirectPage에서 setLoginState를 직접 호출해야 하므로,
-  //     Provider 외부로 setLoginState를 노출하지 않고, localStorage 직접 접근을 권장합니다.
-  //     (만약 App.tsx에 State가 있다면 prop drilling을 해야 함)
-  //     최대한 간결하게 가기 위해, AuthContext에서는 상태만 제공하고 setLoginState는 주석 처리합니다.
-
-  // 💡 대신, OAuthRedirectPage에서 setLoginState 대신 localStorage를 사용하고,
-  //    App.tsx의 ProtectedRoute가 localStorage를 읽도록 하면 됩니다.
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

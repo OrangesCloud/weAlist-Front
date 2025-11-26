@@ -1,9 +1,9 @@
-// src/pages/Dashboard.tsx (MainDashboard.tsx)
-
 import { useLocation, useParams } from 'react-router-dom';
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Briefcase } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+// 💡 [추가] useAuth 훅을 가져옵니다.
+import { useAuth } from '../contexts/AuthContext';
 
 // 💡 [분리된 컴포넌트]
 import MainLayout from '../components/layout/MainLayout';
@@ -28,9 +28,10 @@ import { BoardManageModal } from '../components/modals/board/BoardManageModal';
 import { IROLES } from '../types/common';
 import { ProjectManageModal } from '../components/modals/board/ProjectManageModal';
 
-interface MainDashboardProps {
-  onLogout: () => void;
-}
+// 💡 [제거] onLogout prop은 Context로 대체되었으므로 인터페이스를 제거합니다.
+// interface MainDashboardProps {
+//   onLogout: () => void;
+// }
 
 // 💡 [추가] UI/모달 상태를 통합하는 인터페이스
 interface UIState {
@@ -53,11 +54,15 @@ interface FieldOptionsLookup {
 // =============================================================================
 // MainDashboard (컨테이너 역할)
 // =============================================================================
-const MainDashboard: React.FC<MainDashboardProps> = ({ onLogout }) => {
+// 💡 [수정] onLogout prop을 제거합니다.
+const MainDashboard: React.FC = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const currentWorkspaceId = workspaceId || '';
   const location = useLocation(); // 💡 useLocation 훅 추가
-  const { theme } = useTheme(); // 💡 [추가] location.state에서 userRole 추출 (기본값 설정 필요)
+  const { theme } = useTheme();
+  // 💡 [추가] Context에서 logout 함수를 가져옵니다.
+  const { logout } = useAuth();
+
   // 타입 가정이 필요하거나, location.state를 명시적으로 타입 캐스팅해야 할 수 있습니다.
   const passedRole = ((location.state as any)?.userRole as IROLES) || 'GUEST'; // GUEST 등 기본값 설정
 
@@ -236,7 +241,7 @@ const MainDashboard: React.FC<MainDashboardProps> = ({ onLogout }) => {
 
   return (
     <MainLayout
-      onLogout={onLogout}
+      onLogout={logout} // 💡 [수정] Context에서 가져온 logout 함수를 연결
       workspaceId={currentWorkspaceId}
       onProfileModalOpen={() => toggleUiState('showUserProfile', true)}
     >

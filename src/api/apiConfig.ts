@@ -1,31 +1,48 @@
 import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 
-// 환경 변수 가져오기
-const INJECTED_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 // ============================================================================
-// 💡 [핵심 수정]: Context Path를 환경에 따라 조건부로 붙입니다.
+// 1. 환경 변수 가져오기 및 Base URL 정의
 // ============================================================================
 
-const getApiBaseUrl = (path: string): string => {
-  // 1. 환경 변수 주입 확인
-  if (INJECTED_API_BASE_URL) {
-    // 쉘 스크립트에서 VITE_API_BASE_URL='http://localhost'가 주입된 경우
-    const isLocalDevelopment = INJECTED_API_BASE_URL.includes('localhost');
+// 💡 [Axios용 - 컨테이너 내부 통신]: http://nginx (컨테이너 DNS 이름)
+const INTERNAL_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-    if (isLocalDevelopment)
-      return `${INJECTED_API_BASE_URL}${path === '/api/users' ? ':8080' : ':8000/api'}`;
+// ⭐️ [PUBLIC용 - 브라우저 외부 통신]: Host PC의 브라우저가 직접 접근
+// OAuth 리다이렉션, WebSocket 연결 등 Nginx를 거치지 않고 Host 포트로 직접 접근할 때 사용합니다.
 
-    return `${INJECTED_API_BASE_URL}${path}`;
+// User Service의 호스트 포트 (8080)
+export const USER_PUBLIC_HOST = import.meta.env.VITE_USER_PUBLIC_HOST || 'http://localhost:8080';
+
+// Board Service의 호스트 포트 (8000)
+export const BOARD_PUBLIC_HOST =
+  import.meta.env.VITE_BOARD_PUBLIC_HOST || 'http://localhost:8000/api';
+
+// User Service의 API Context Path를 결정하는 함수
+const getInternalApiBaseUrl = (path: string): string => {
+  // path는 '/api/users' 또는 '/api/boards'
+
+  // ⭐️ [로직 변경] INTERNAL_API_BASE_URL (http://nginx)에 'nginx'가 포함되어 있다면 로컬 환경으로 간주
+  const isLocal = INTERNAL_API_BASE_URL?.includes('nginx');
+
+  if (isLocal) {
+    // 로컬 환경: Context Path (예: /api/users)를 baseURL에서 제거합니다.
+    // **경고:** 이제 API 호출 함수(userService.ts)는 전체 경로(예: /api/users/workspaces/all)를 제공해야 합니다.
+    return path?.includes('user') ? USER_PUBLIC_HOST : BOARD_PUBLIC_HOST; // 결과: http://nginx
   }
 
-  // 환경 변수가 없을 경우 (Fallback, CI/CD 실패 대비)
-  return `https://api.wealist.co.kr${path}`;
+  // 배포 환경: Context Path를 baseURL에 포함
+  const baseURL = `${INTERNAL_API_BASE_URL}${path}`; // 예: https://api.wealist.co.kr/api/users
+  console.log(baseURL);
+  return baseURL;
 };
 
-export const USER_REPO_API_URL = getApiBaseUrl('/api/users');
-export const BOARD_SERVICE_API_URL = getApiBaseUrl('/api/boards/api');
-// export const BOARD_WS_URL = getApiBaseUrl('/api/ws/project');
+// 💡 [변경] 이제 USER_REPO_API_URL은 로컬에서 'http://nginx' (Context Path 없음)
+export const USER_REPO_API_URL = getInternalApiBaseUrl('/api/users');
+// 💡 [변경] 이제 BOARD_SERVICE_API_URL은 로컬에서 'http://nginx' (Context Path 없음)
+export const BOARD_SERVICE_API_URL = getInternalApiBaseUrl('/api/boards');
+// export const BOARD_WS_URL = getInternalApiBaseUrl('/api/ws/project'); // WebSocket도 board-service 포트(8000)로 직접 연결하는 경우가 많음
+
+// ==========================================================================
 // ============================================================================
 // 인증 갱신 관련 변수
 // ============================================================================
@@ -51,18 +68,18 @@ const RETRY_DELAY_MS = 1000; // 재시도 간격 (1초)
  * User Repo API (Java)를 위한 Axios 인스턴스
  */
 export const userRepoClient = axios.create({
-  baseURL: USER_REPO_API_URL,
+  baseURL: USER_REPO_API_URL, // http://nginx/api/users
   headers: { 'Content-Type': 'application/json' },
-  withCredentials: true, // CORS 인증 정보 포함
+  withCredentials: true,
 });
 
 /**
  * Board Service API (Go)를 위한 Axios 인스턴스
  */
 export const boardServiceClient = axios.create({
-  baseURL: BOARD_SERVICE_API_URL,
+  baseURL: BOARD_SERVICE_API_URL, // http://nginx/api/boards
   headers: { 'Content-Type': 'application/json' },
-  withCredentials: true, // CORS 인증 정보 포함
+  withCredentials: true,
 });
 
 // ============================================================================
@@ -105,7 +122,8 @@ const refreshAccessToken = async (): Promise<string> => {
 
   try {
     // 💡 토큰 갱신 API는 인증 헤더 없이 리프레시 토큰만으로 호출되어야 함
-    const response = await axios.post(`${USER_REPO_API_URL}/api/auth/refresh`, {
+    // ⭐️ API_PUBLIC_HOST 대신 INTERNAL_API_BASE_URL을 사용해야 Axios 요청이 컨테이너 내부 DNS를 통해 Nginx로 전달됩니다.
+    const response = await axios.post(`${INTERNAL_API_BASE_URL}/api/auth/refresh`, {
       refreshToken,
     });
 
@@ -247,6 +265,9 @@ const setupUnifiedResponseInterceptor = (client: AxiosInstance) => {
         await delay;
         return client(originalRequest);
       }
+
+      // 그 외의 모든 오류 반환
+      return Promise.reject(error);
     },
   );
 };

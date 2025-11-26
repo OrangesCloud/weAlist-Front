@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+// 💡 경로 재수정: 일반적인 구조(src/pages -> src/contexts)를 가정하여 ../로 수정
 import { useTheme } from '../contexts/ThemeContext';
-
-// 1. Base URL 결정 (dev.sh에서 주입된 값 또는 하드코딩된 배포 도메인)
-const BASE_DOMAIN = import.meta.env.VITE_API_BASE_URL || 'https://api.wealist.co.kr';
-
-// 2. 로컬 개발 환경(development)일 경우에만 8080 포트를 붙입니다.
-// 이 조건문은 VITE_API_BASE_URL이 'http://localhost'일 때만 포트가 붙도록 보장합니다.
-// 배포 환경(production)에서는 포트가 붙지 않습니다.
-const OAUTH_BASE =
-  BASE_DOMAIN === 'http://localhost' || BASE_DOMAIN.includes('127.0.0.1')
-    ? `${BASE_DOMAIN}:8080`
-    : BASE_DOMAIN + '/api/users';
+// 💡 [수정] USER_PUBLIC_HOST를 가져옵니다. (apiConfig.ts에서 이름이 변경됨)
+import { USER_PUBLIC_HOST } from '../api/apiConfig';
 
 // ⚠️ 백엔드 OAuth2 인증 시작 엔드포인트
-const GOOGLE_AUTH_URL = `${OAUTH_BASE}/oauth2/authorization/google`;
+// [수정]: Nginx 경로(/api/users) 대신 USER_PUBLIC_HOST(http://localhost:8080)를 사용하여 백엔드 서비스에 직접 연결합니다.
+const GOOGLE_AUTH_URL = `${USER_PUBLIC_HOST}/oauth2/authorization/google`;
+
 const AuthPage: React.FC = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
