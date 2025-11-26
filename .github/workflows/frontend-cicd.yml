@@ -56,13 +56,14 @@ jobs:
           echo "✅ API Base URL: https://$ALB_DOMAIN"
           echo "✅ Google Client ID: $GOOGLE_ID"
 
-          # ⭐️ [핵심 추가] 프론트엔드 CloudFront 도메인 (정확한 주소는 secrets에서 가져와야 함)
-          # CloudFront 주소는 Route 53에서 wealist.co.kr로 연결되므로, wealist.co.kr을 직접 사용합니다.
-          echo "VITE_FRONTEND_HOST=https://wealist.co.kr" >> $GITHUB_ENV
+          # ⭐️ [핵심 추가] 프론트엔드 호스트 주소 주입 (OAuth 및 절대 경로 문제 해결용)
+          # USER_PUBLIC_HOST에 배포 환경 주소를 주입하여 localhost:8080 Fallback을 막습니다.
+          echo "VITE_USER_PUBLIC_HOST=https://wealist.co.kr" >> $GITHUB_ENV 
+          echo "VITE_BOARD_PUBLIC_HOST=https://wealist.co.kr" >> $GITHUB_ENV
 
-          echo "✅ API Base URL: https://$ALB_DOMAIN"
-          echo "✅ Google Client ID: $GOOGLE_ID"
-          echo "✅ Frontend Host: https://wealist.co.kr"
+
+          echo "✅ API Base URL: https://$ALB_DOMAIN/api"
+          echo "✅ Public Host: https://wealist.co.kr"
 
       - name: 📦 Install Dependencies
         run: pnpm install --frozen-lockfile
