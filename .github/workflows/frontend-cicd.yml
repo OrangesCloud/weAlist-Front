@@ -34,9 +34,9 @@ jobs:
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
-          cache-dependency-path: 'pnpm-lock.yaml'
+          node-version: "20"
+          cache: "pnpm"
+          cache-dependency-path: "pnpm-lock.yaml"
 
       # ============================================
       # 3. SSM Parameter Store에서 설정 조회 및 주입
@@ -58,8 +58,8 @@ jobs:
 
           # ⭐️ [핵심 추가] 프론트엔드 호스트 주소 주입 (OAuth 및 절대 경로 문제 해결용)
           # USER_PUBLIC_HOST에 배포 환경 주소를 주입하여 localhost:8080 Fallback을 막습니다.
-          echo "VITE_USER_PUBLIC_HOST=https://wealist.co.kr" >> $GITHUB_ENV 
-          echo "VITE_BOARD_PUBLIC_HOST=https://wealist.co.kr" >> $GITHUB_ENV
+          echo "VITE_USER_PUBLIC_HOST=https://api.wealist.co.kr" >> $GITHUB_ENV 
+          echo "VITE_BOARD_PUBLIC_HOST=https://api.wealist.co.kr" >> $GITHUB_ENV
 
 
           echo "✅ API Base URL: https://$ALB_DOMAIN/api"
