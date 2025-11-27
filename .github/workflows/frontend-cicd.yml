@@ -34,9 +34,9 @@ jobs:
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "pnpm"
-          cache-dependency-path: "pnpm-lock.yaml"
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
 
       # ============================================
       # 3. SSM Parameter Store에서 설정 조회 및 주입
@@ -49,20 +49,13 @@ jobs:
           ALB_DOMAIN=$(aws ssm get-parameter --name "/wealist/prod/alb/domain" --query "Parameter.Value" --output text)
           echo "VITE_API_BASE_URL=https://$ALB_DOMAIN" >> $GITHUB_ENV
 
-          # 2. GOOGLE_CLIENT_ID 조회 -> VITE_GOOGLE_CLIENT_ID 설정
-          VITE_GOOGLE_CLIENT_ID=$(aws ssm get-parameter --name "/wealist/prod/oauth/google_client_id" --query "Parameter.Value" --output text)
-          echo "VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID" >> $GITHUB_ENV
-
-          echo "✅ API Base URL: https://$ALB_DOMAIN"
-          echo "✅ Google Client ID: $VITE_GOOGLE_CLIENT_ID"
-
           # ⭐️ [핵심 추가] 프론트엔드 호스트 주소 주입 (OAuth 및 절대 경로 문제 해결용)
           # USER_PUBLIC_HOST에 배포 환경 주소를 주입하여 localhost:8080 Fallback을 막습니다.
           echo "VITE_USER_PUBLIC_HOST=https://api.wealist.co.kr" >> $GITHUB_ENV 
           echo "VITE_BOARD_PUBLIC_HOST=https://api.wealist.co.kr" >> $GITHUB_ENV
 
 
-          echo "✅ API Base URL: https://$ALB_DOMAIN/api"
+          echo "✅ API Base URL: https://$ALB_DOMAIN"
           echo "✅ Public Host: https://wealist.co.kr"
 
       - name: 📦 Install Dependencies

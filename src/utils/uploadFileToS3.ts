@@ -13,7 +13,7 @@ export const uploadFileToS3 = async (
   try {
     // 1️⃣ [Backend] Presigned URL 요청 (JSON)
     // entityType은 대문자로 변환 (PROJECT, BOARD 등)
-    const presignedRes = await boardServiceClient.post('/attachments/presigned-url', {
+    const presignedRes = await boardServiceClient.post('/api/attachments/presigned-url', {
       contentType: file.type,
       entityType: category.toUpperCase(),
       fileName: file.name,
