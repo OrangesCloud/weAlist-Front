@@ -52,7 +52,7 @@ export const getProjectInitSettings = async (
 ): Promise<ProjectInitSettingsResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<ProjectInitSettingsResponse>> =
-      await boardServiceClient.get(`/projects/${projectId}/init-settings`);
+      await boardServiceClient.get(`/api/projects/${projectId}/init-settings`);
     return response.data.data;
   } catch (error) {
     console.error('getProjectInitSettings error:', error);
@@ -67,7 +67,7 @@ export const getProjectInitSettings = async (
 export const getProjects = async (workspaceId: string): Promise<ProjectResponse[]> => {
   try {
     const response: AxiosResponse<SuccessResponse<ProjectResponse[]>> =
-      await boardServiceClient.get(`/projects/workspace/${workspaceId}`);
+      await boardServiceClient.get(`/api/projects/workspace/${workspaceId}`);
     return response.data.data || [];
   } catch (error) {
     console.error('getProjects error:', error);
@@ -94,7 +94,7 @@ export const getDefaultProject = async (workspaceId: string): Promise<ProjectRes
 
   try {
     const response: AxiosResponse<SuccessResponse<ProjectResponse>> = await boardServiceClient.get(
-      `/projects/workspace/${workspaceId}/default`,
+      `/api/projects/workspace/${workspaceId}/default`,
     );
     return response.data.data;
   } catch (error) {
@@ -104,25 +104,9 @@ export const getDefaultProject = async (workspaceId: string): Promise<ProjectRes
 };
 
 export const getProject = async (projectId: string): Promise<ProjectResponse> => {
-  if (USE_MOCK_DATA) {
-    return {
-      projectId: projectId,
-      workspaceId: 'mock-workspace-id',
-      name: 'Mock Project',
-      description: 'Mock project description',
-      ownerId: 'mock-owner-id',
-      ownerName: 'Mock Owner',
-      ownerEmail: 'owner@example.com',
-      isPublic: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      attachments: [],
-    };
-  }
-
   try {
     const response: AxiosResponse<SuccessResponse<ProjectResponse>> = await boardServiceClient.get(
-      `/projects/${projectId}`,
+      `/api/projects/${projectId}`,
     );
     return response.data.data;
   } catch (error) {
@@ -150,7 +134,7 @@ export const updateProject = async (
 ): Promise<ProjectResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<ProjectResponse>> = await boardServiceClient.put(
-      `/projects/${projectId}`,
+      `/api/projects/${projectId}`,
       data,
     );
     return response.data.data;
@@ -162,7 +146,7 @@ export const updateProject = async (
 
 export const deleteProject = async (projectId: string): Promise<void> => {
   try {
-    await boardServiceClient.delete(`/projects/${projectId}`);
+    await boardServiceClient.delete(`/api/projects/${projectId}`);
   } catch (error) {
     console.error('deleteProject error:', error);
     throw error;
@@ -175,18 +159,9 @@ export const searchProjects = async (
   page: number = 1,
   limit: number = 10,
 ): Promise<PaginatedProjectsResponse> => {
-  if (USE_MOCK_DATA) {
-    return {
-      projects: [],
-      total: 0,
-      page: page,
-      limit: limit,
-    };
-  }
-
   try {
     const response: AxiosResponse<SuccessResponse<PaginatedProjectsResponse>> =
-      await boardServiceClient.get('/projects/search', {
+      await boardServiceClient.get('/api/projects/search', {
         params: { workspaceId, query, page, limit },
       });
     return response.data.data;
@@ -217,7 +192,7 @@ export const getProjectMembers = async (projectId: string): Promise<ProjectMembe
 
   try {
     const response: AxiosResponse<SuccessResponse<ProjectMemberResponse[]>> =
-      await boardServiceClient.get(`/projects/${projectId}/members`);
+      await boardServiceClient.get(`/api/projects/${projectId}/members`);
     return response.data.data || [];
   } catch (error) {
     console.error('getProjectMembers error:', error);
@@ -232,7 +207,7 @@ export const updateProjectMemberRole = async (
 ): Promise<ProjectMemberResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<ProjectMemberResponse>> =
-      await boardServiceClient.put(`/projects/${projectId}/members/${memberId}/role`, data);
+      await boardServiceClient.put(`/api/projects/${projectId}/members/${memberId}/role`, data);
     return response.data.data;
   } catch (error) {
     console.error('updateProjectMemberRole error:', error);
@@ -242,7 +217,7 @@ export const updateProjectMemberRole = async (
 
 export const removeProjectMember = async (projectId: string, memberId: string): Promise<void> => {
   try {
-    await boardServiceClient.delete(`/projects/${projectId}/members/${memberId}`);
+    await boardServiceClient.delete(`/api/projects/${projectId}/members/${memberId}`);
   } catch (error) {
     console.error('removeProjectMember error:', error);
     throw error;
@@ -259,7 +234,7 @@ export const getProjectJoinRequests = async (
 ): Promise<ProjectJoinRequestResponse[]> => {
   try {
     const response: AxiosResponse<SuccessResponse<ProjectJoinRequestResponse[]>> =
-      await boardServiceClient.get(`/projects/${projectId}/join-requests`, {
+      await boardServiceClient.get(`/api/projects/${projectId}/join-requests`, {
         params: { status },
       });
     return response.data.data || [];
@@ -274,7 +249,7 @@ export const createProjectJoinRequest = async (
 ): Promise<ProjectJoinRequestResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<ProjectJoinRequestResponse>> =
-      await boardServiceClient.post('/join-requests', data);
+      await boardServiceClient.post('/api/join-requests', data);
     return response.data.data;
   } catch (error) {
     console.error('createProjectJoinRequest error:', error);
@@ -288,7 +263,7 @@ export const updateProjectJoinRequest = async (
 ): Promise<ProjectJoinRequestResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<ProjectJoinRequestResponse>> =
-      await boardServiceClient.put(`/join-requests/${joinRequestId}`, data);
+      await boardServiceClient.put(`/api/join-requests/${joinRequestId}`, data);
     return response.data.data;
   } catch (error) {
     console.error('updateProjectJoinRequest error:', error);
@@ -304,28 +279,6 @@ export const getBoards = async (
   projectId: string,
   filters?: BoardFilters,
 ): Promise<BoardResponse[]> => {
-  if (USE_MOCK_DATA) {
-    return [
-      {
-        boardId: 'mock-board-1',
-        projectId: projectId,
-        title: 'Mock Board',
-        content: 'Mock content',
-        customFields: {
-          stage: 'in_progress',
-          role: 'developer',
-          importance: 'normal',
-        },
-        authorId: 'mock-author',
-        assigneeId: 'mock-assignee',
-        dueDate: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        attachments: [],
-      },
-    ];
-  }
-
   try {
     const params: any = { projectId };
     if (filters?.customFields) {
@@ -333,7 +286,7 @@ export const getBoards = async (
     }
 
     const response: AxiosResponse<SuccessResponse<BoardResponse[]>> = await boardServiceClient.get(
-      '/boards',
+      '/api/boards',
       { params },
     );
     return response.data.data || [];
@@ -355,7 +308,7 @@ export const getBoardsByProject = async (
     }
 
     const response: AxiosResponse<SuccessResponse<BoardResponse[]>> = await boardServiceClient.get(
-      `/boards/project/${projectId}`,
+      `/api/boards/project/${projectId}`,
       { params },
     );
     return response.data.data || [];
@@ -366,26 +319,9 @@ export const getBoardsByProject = async (
 };
 
 export const getBoard = async (boardId: string): Promise<BoardDetailResponse> => {
-  if (USE_MOCK_DATA) {
-    return {
-      boardId: boardId,
-      projectId: 'mock-project',
-      title: 'Mock Detail Board',
-      content: 'Content',
-      customFields: {},
-      authorId: 'author',
-      assigneeId: 'assignee',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      attachments: [],
-      participants: [],
-      comments: [],
-    };
-  }
-
   try {
     const response: AxiosResponse<SuccessResponse<BoardDetailResponse>> =
-      await boardServiceClient.get(`/boards/${boardId}`);
+      await boardServiceClient.get(`/api/boards/${boardId}`);
     return response.data.data;
   } catch (error) {
     console.error('getBoard error:', error);
@@ -396,7 +332,7 @@ export const getBoard = async (boardId: string): Promise<BoardDetailResponse> =>
 export const createBoard = async (data: CreateBoardRequest): Promise<BoardResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<BoardResponse>> = await boardServiceClient.post(
-      '/boards',
+      '/api/boards',
       data,
     );
     return response.data.data;
@@ -412,7 +348,7 @@ export const updateBoard = async (
 ): Promise<BoardResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<BoardResponse>> = await boardServiceClient.put(
-      `/boards/${boardId}`,
+      `/api/boards/${boardId}`,
       data,
     );
     return response.data.data;
@@ -424,7 +360,7 @@ export const updateBoard = async (
 
 export const deleteBoard = async (boardId: string): Promise<void> => {
   try {
-    await boardServiceClient.delete(`/boards/${boardId}`);
+    await boardServiceClient.delete(`/api/boards/${boardId}`);
   } catch (error) {
     console.error('deleteBoard error:', error);
     throw error;
@@ -437,7 +373,7 @@ export const deleteBoard = async (boardId: string): Promise<void> => {
 
 export const moveBoard = async (boardId: string, data: MoveBoardRequest): Promise<void> => {
   try {
-    await boardServiceClient.put(`/boards/${boardId}/move`, data);
+    await boardServiceClient.put(`/api/boards/${boardId}/move`, data);
   } catch (error) {
     console.error('moveBoard error:', error);
     throw error;
@@ -453,7 +389,7 @@ export const getFieldOptions = async (
 ): Promise<FieldOptionResponse[]> => {
   try {
     const response: AxiosResponse<SuccessResponse<FieldOptionResponse[]>> =
-      await boardServiceClient.get('/field-options', {
+      await boardServiceClient.get('/api/field-options', {
         params: { fieldType },
       });
     return response.data.data || [];
@@ -468,7 +404,7 @@ export const createFieldOption = async (
 ): Promise<FieldOptionResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<FieldOptionResponse>> =
-      await boardServiceClient.post('/field-options', data);
+      await boardServiceClient.post('/api/field-options', data);
     return response.data.data;
   } catch (error) {
     console.error('createFieldOption error:', error);
@@ -482,7 +418,7 @@ export const updateFieldOption = async (
 ): Promise<FieldOptionResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<FieldOptionResponse>> =
-      await boardServiceClient.patch(`/field-options/${optionId}`, data);
+      await boardServiceClient.patch(`/api/field-options/${optionId}`, data);
     return response.data.data;
   } catch (error) {
     console.error('updateFieldOption error:', error);
@@ -492,7 +428,7 @@ export const updateFieldOption = async (
 
 export const deleteFieldOption = async (optionId: string): Promise<void> => {
   try {
-    await boardServiceClient.delete(`/field-options/${optionId}`);
+    await boardServiceClient.delete(`/api/field-options/${optionId}`);
   } catch (error) {
     console.error('deleteFieldOption error:', error);
     throw error;
@@ -506,7 +442,7 @@ export const deleteFieldOption = async (optionId: string): Promise<void> => {
 export const getComments = async (boardId: string): Promise<CommentResponse[]> => {
   try {
     const response: AxiosResponse<SuccessResponse<CommentResponse[]>> =
-      await boardServiceClient.get('/comments', {
+      await boardServiceClient.get('/api/comments', {
         params: { boardId },
       });
     return response.data.data || [];
@@ -519,7 +455,7 @@ export const getComments = async (boardId: string): Promise<CommentResponse[]> =
 export const getCommentsByBoard = async (boardId: string): Promise<CommentResponse[]> => {
   try {
     const response: AxiosResponse<SuccessResponse<CommentResponse[]>> =
-      await boardServiceClient.get(`/comments/board/${boardId}`);
+      await boardServiceClient.get(`/api/comments/board/${boardId}`);
     return response.data.data || [];
   } catch (error) {
     console.error('getCommentsByBoard error:', error);
@@ -530,7 +466,7 @@ export const getCommentsByBoard = async (boardId: string): Promise<CommentRespon
 export const createComment = async (data: CreateCommentRequest): Promise<CommentResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<CommentResponse>> = await boardServiceClient.post(
-      '/comments',
+      '/api/comments',
       data,
     );
     return response.data.data;
@@ -546,7 +482,7 @@ export const updateComment = async (
 ): Promise<CommentResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<CommentResponse>> = await boardServiceClient.put(
-      `/comments/${commentId}`,
+      `/api/comments/${commentId}`,
       data,
     );
     return response.data.data;
@@ -558,7 +494,7 @@ export const updateComment = async (
 
 export const deleteComment = async (commentId: string): Promise<void> => {
   try {
-    await boardServiceClient.delete(`/comments/${commentId}`);
+    await boardServiceClient.delete(`/api/comments/${commentId}`);
   } catch (error) {
     console.error('deleteComment error:', error);
     throw error;
@@ -572,7 +508,7 @@ export const deleteComment = async (commentId: string): Promise<void> => {
 export const getParticipants = async (boardId: string): Promise<ParticipantResponse[]> => {
   try {
     const response: AxiosResponse<SuccessResponse<ParticipantResponse[]>> =
-      await boardServiceClient.get(`/participants/board/${boardId}`);
+      await boardServiceClient.get(`/api/participants/board/${boardId}`);
     return response.data.data || [];
   } catch (error) {
     console.error('getParticipants error:', error);
@@ -589,7 +525,7 @@ export const addParticipants = async (
 ): Promise<AddParticipantsResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<AddParticipantsResponse>> =
-      await boardServiceClient.post('/participants', data);
+      await boardServiceClient.post('/api/participants', data);
     return response.data.data;
   } catch (error) {
     console.error('addParticipants error:', error);
@@ -599,7 +535,7 @@ export const addParticipants = async (
 
 export const removeParticipant = async (boardId: string, userId: string): Promise<void> => {
   try {
-    await boardServiceClient.delete(`/participants/board/${boardId}/user/${userId}`);
+    await boardServiceClient.delete(`/api/participants/board/${boardId}/user/${userId}`);
   } catch (error) {
     console.error('removeParticipant error:', error);
     throw error;
@@ -615,26 +551,9 @@ export const removeParticipant = async (boardId: string, userId: string): Promis
  * [API] GET /api/boards/{boardId}/attachments
  */
 export const getAttachments = async (boardId: string): Promise<AttachmentResponse[]> => {
-  if (USE_MOCK_DATA) {
-    return [
-      {
-        id: 'mock-file-1',
-        entityId: boardId,
-        entityType: 'BOARD',
-        fileName: 'mock.pdf',
-        fileUrl: 'http://mock.url/file.pdf',
-        contentType: 'application/pdf',
-        fileSize: 1024,
-        uploadedBy: 'user-1',
-        uploadedAt: new Date().toISOString(),
-        status: 'UPLOADED',
-      },
-    ];
-  }
-
   try {
     const response: AxiosResponse<SuccessResponse<AttachmentResponse[]>> =
-      await boardServiceClient.get(`/boards/${boardId}/attachments`);
+      await boardServiceClient.get(`/api/boards/${boardId}/attachments`);
     return response.data.data || [];
   } catch (error) {
     console.error('getAttachments error:', error);
@@ -651,7 +570,7 @@ export const requestPresignedUrl = async (
 ): Promise<PresignedURLResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<PresignedURLResponse>> =
-      await boardServiceClient.post('/attachments/presigned-url', data);
+      await boardServiceClient.post('/api/attachments/presigned-url', data);
     return response.data.data;
   } catch (error) {
     console.error('requestPresignedUrl error:', error);
@@ -686,7 +605,7 @@ export const saveAttachmentMetadata = async (
 ): Promise<AttachmentResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<AttachmentResponse>> =
-      await boardServiceClient.post('/attachments', data);
+      await boardServiceClient.post('/api/attachments', data);
     return response.data.data;
   } catch (error) {
     console.error('saveAttachmentMetadata error:', error);
@@ -739,7 +658,7 @@ export const uploadAttachment = async (
 export const downloadAttachment = async (attachmentId: string, fileName: string): Promise<void> => {
   try {
     // 주의: 서버 엔드포인트가 /attachments/{id}/download 인지 확인 필요
-    const response = await boardServiceClient.get(`/attachments/${attachmentId}/download`, {
+    const response = await boardServiceClient.get(`/api/attachments/${attachmentId}/download`, {
       responseType: 'blob',
     });
 
@@ -764,7 +683,7 @@ export const downloadAttachment = async (attachmentId: string, fileName: string)
  */
 export const deleteAttachment = async (attachmentId: string): Promise<void> => {
   try {
-    await boardServiceClient.delete(`/attachments/${attachmentId}`);
+    await boardServiceClient.delete(`/api/attachments/${attachmentId}`);
   } catch (error) {
     console.error('deleteAttachment error:', error);
     throw error;

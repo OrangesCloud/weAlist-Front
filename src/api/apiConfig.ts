@@ -11,11 +11,10 @@ const INTERNAL_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 // OAuth 리다이렉션, WebSocket 연결 등 Nginx를 거치지 않고 Host 포트로 직접 접근할 때 사용합니다.
 
 // User Service의 호스트 포트 (8080)
-export const USER_PUBLIC_HOST = import.meta.env.VITE_USER_PUBLIC_HOST || 'http://localhost:8080';
+export const USER_PUBLIC_HOST = import.meta.env.VITE_USER_PUBLIC_HOST;
 
 // Board Service의 호스트 포트 (8000)
-export const BOARD_PUBLIC_HOST =
-  import.meta.env.VITE_BOARD_PUBLIC_HOST || 'http://localhost:8000/api';
+export const BOARD_PUBLIC_HOST = import.meta.env.VITE_BOARD_PUBLIC_HOST;
 
 // User Service의 API Context Path를 결정하는 함수
 const getInternalApiBaseUrl = (path: string): string => {
@@ -25,9 +24,9 @@ const getInternalApiBaseUrl = (path: string): string => {
   const isLocal = INTERNAL_API_BASE_URL?.includes('nginx');
 
   if (isLocal) {
-    // 로컬 환경: Context Path (예: /api/users)를 baseURL에서 제거합니다.
-    // **경고:** 이제 API 호출 함수(userService.ts)는 전체 경로(예: /api/users/workspaces/all)를 제공해야 합니다.
-    return path?.includes('user') ? USER_PUBLIC_HOST : BOARD_PUBLIC_HOST; // 결과: http://nginx
+    const baseURL = path?.includes('user') ? USER_PUBLIC_HOST : BOARD_PUBLIC_HOST;
+    console.log(baseURL);
+    return baseURL;
   }
 
   // 배포 환경: Context Path를 baseURL에 포함
