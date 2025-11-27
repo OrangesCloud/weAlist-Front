@@ -118,7 +118,7 @@ export const getProject = async (projectId: string): Promise<ProjectResponse> =>
 export const createProject = async (data: CreateProjectRequest): Promise<ProjectResponse> => {
   try {
     const response: AxiosResponse<SuccessResponse<ProjectResponse>> = await boardServiceClient.post(
-      '/projects',
+      '/api/projects',
       data,
     );
     return response.data.data;
