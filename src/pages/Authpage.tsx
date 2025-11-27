@@ -4,10 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 // 💡 [수정] USER_PUBLIC_HOST를 가져옵니다. (apiConfig.ts에서 이름이 변경됨)
 import { USER_PUBLIC_HOST } from '../api/apiConfig';
-
 // ⚠️ 백엔드 OAuth2 인증 시작 엔드포인트
 // [수정]: Nginx 경로(/api/users) 대신 USER_PUBLIC_HOST(http://localhost:8080)를 사용하여 백엔드 서비스에 직접 연결합니다.
-const GOOGLE_AUTH_URL = `${USER_PUBLIC_HOST}/oauth2/authorization/google`;
+const GOOGLE_AUTH_URL = `${
+  USER_PUBLIC_HOST?.includes('localhost') ? USER_PUBLIC_HOST : USER_PUBLIC_HOST + '/api/users'
+}/oauth2/authorization/google`;
 
 const AuthPage: React.FC = () => {
   const { theme } = useTheme();
