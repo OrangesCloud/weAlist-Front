@@ -50,11 +50,11 @@ jobs:
           echo "VITE_API_BASE_URL=https://$ALB_DOMAIN" >> $GITHUB_ENV
 
           # 2. GOOGLE_CLIENT_ID 조회 -> VITE_GOOGLE_CLIENT_ID 설정
-          GOOGLE_ID=$(aws ssm get-parameter --name "/wealist/prod/oauth/google_client_id" --query "Parameter.Value" --output text)
-          echo "VITE_GOOGLE_CLIENT_ID=$GOOGLE_ID" >> $GITHUB_ENV
+          VITE_GOOGLE_CLIENT_ID=$(aws ssm get-parameter --name "/wealist/prod/oauth/google_client_id" --query "Parameter.Value" --output text)
+          echo "VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID" >> $GITHUB_ENV
 
           echo "✅ API Base URL: https://$ALB_DOMAIN"
-          echo "✅ Google Client ID: $GOOGLE_ID"
+          echo "✅ Google Client ID: $VITE_GOOGLE_CLIENT_ID"
 
           # ⭐️ [핵심 추가] 프론트엔드 호스트 주소 주입 (OAuth 및 절대 경로 문제 해결용)
           # USER_PUBLIC_HOST에 배포 환경 주소를 주입하여 localhost:8080 Fallback을 막습니다.
