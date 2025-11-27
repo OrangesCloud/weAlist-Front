@@ -1,6 +1,6 @@
 // src/components/modals/board/ProjectManageModal.tsx
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
   X,
   Paperclip,
@@ -27,9 +27,6 @@ import { WorkspaceMemberResponse } from '../../../types/user';
 import { useFileUpload } from '../../../hooks/useFileUpload';
 import { FileUploader } from '../../common/FileUploader';
 
-/**
- * 모달 모드 타입 정의
- */
 type ProjectModalMode = 'create' | 'detail' | 'edit';
 
 interface ProjectManageModalProps {
@@ -43,7 +40,6 @@ interface ProjectManageModalProps {
   members?: WorkspaceMemberResponse[] | undefined;
 }
 
-// 파일 다운로드 핸들러 (Detail 모드용)
 const handleFileDownload = (fileUrl: string, fileName: string) => {
   if (!fileUrl) return;
 
@@ -56,7 +52,6 @@ const handleFileDownload = (fileUrl: string, fileName: string) => {
   document.body.removeChild(link);
 };
 
-// 이미지 파일 여부 확인 함수
 const isImageFile = (contentType?: string, fileName?: string): boolean => {
   if (contentType) {
     return contentType.startsWith('image/');
@@ -82,10 +77,8 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
   const isExistingProject = !!project;
   const [mode, setMode] = useState<ProjectModalMode>(isExistingProject ? initialMode : 'create');
 
-  // 💡 [추가] 모달 내에서 프로젝트 데이터의 최신 상태를 관리하기 위한 상태
   const [currentProject, setCurrentProject] = useState<ProjectResponse | undefined>(project);
 
-  // Form state (currentProject를 기반으로 초기화)
   const [name, setName] = useState(currentProject?.name || '');
   const [description, setDescription] = useState(currentProject?.description || '');
   const [startDate, setStartDate] = useState(
@@ -98,12 +91,9 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Board & Member state
   const [boards, setBoards] = useState<BoardResponse[]>([]);
   const [isBoardsLoading, setIsBoardsLoading] = useState(false);
-  const [projectMembers, setProjectMembers] = useState<WorkspaceMemberResponse[]>(members);
 
-  // Attachment state (for UI display and hook initialization)
   const [firstAttachmentState, setFirstAttachmentState] = useState<AttachmentResponse | undefined>(
     currentProject?.attachments?.[0],
   );
@@ -111,7 +101,6 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
     currentProject?.attachments?.[0]?.id,
   );
 
-  // File Upload Hook
   const {
     selectedFile,
     previewUrl,
@@ -122,74 +111,68 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
     setAttachmentId,
   } = useFileUpload();
 
-  // UI state
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const canEdit = useMemo(() => {
     return isExistingProject && (userRole === 'OWNER' || userRole === 'ADMIN');
   }, [isExistingProject, userRole]);
 
-  // ✅ 수정된 useEffect (projectMembers를 의존성에서 제거)
+  // ref 선언
+  const setInitialFileRef = useRef(setInitialFile);
+  const setAttachmentIdRef = useRef(setAttachmentId);
+  setInitialFileRef.current = setInitialFile;
+  setAttachmentIdRef.current = setAttachmentId;
+
+  const isInitialized = useRef(false);
+  const prevProjectId = useRef(project?.projectId);
+
+  // ✅ 폼 데이터 초기화 - project prop 변경 시에만
   useEffect(() => {
-    // members prop이 변경되었을 때만 projectMembers 상태를 갱신합니다.
-    // 이 조건을 통해 무한 루프를 방지합니다.
-    if (members) {
-      setProjectMembers(members);
+    // project prop이 실제로 바뀐 경우에만 초기화
+    const projectChanged = prevProjectId.current !== project?.projectId;
+
+    if (isInitialized.current && !projectChanged) {
+      return;
     }
-    // 주의: projectMembers를 의존성 배열에 넣으면 무한 루프가 발생합니다.
-  }, [members]);
 
-  // 프로젝트 데이터 로드 및 파일 상태 초기화 (메인 useEffect)
-  useEffect(() => {
-    // 💡 [수정] project prop 또는 currentProject 로컬 상태를 사용
-    const projectToUse = currentProject || project;
+    prevProjectId.current = project?.projectId;
 
-    if (projectToUse) {
-      setName(projectToUse.name);
-      setDescription(projectToUse.description || '');
-      setStartDate(projectToUse.startDate ? projectToUse.startDate.substring(0, 10) : '');
-      setDueDate(projectToUse.dueDate ? projectToUse.dueDate.substring(0, 10) : '');
+    if (project) {
+      setName(project.name);
+      setDescription(project.description || '');
+      setStartDate(project.startDate ? project.startDate.substring(0, 10) : '');
+      setDueDate(project.dueDate ? project.dueDate.substring(0, 10) : '');
+      setCurrentProject(project);
 
-      const initialAttachment = projectToUse.attachments?.[0];
+      const initialAttachment = project.attachments?.[0];
       setFirstAttachmentState(initialAttachment);
       setCurrentAttachmentId(initialAttachment?.id);
 
       if (initialAttachment) {
-        setInitialFile(initialAttachment.fileUrl, initialAttachment.fileName);
-        setAttachmentId(initialAttachment.id);
-      } else {
-        handleRemoveFile();
+        setInitialFileRef.current(initialAttachment.fileUrl, initialAttachment.fileName);
+        setAttachmentIdRef.current(initialAttachment.id);
       }
     } else if (mode === 'create') {
-      // 생성 모드 초기화
       setName('');
       setDescription('');
       setStartDate('');
       setDueDate('');
       setFirstAttachmentState(undefined);
       setCurrentAttachmentId(undefined);
-      handleRemoveFile();
     }
     setError(null);
-  }, [
-    project,
-    currentProject, // 💡 [추가] currentProject 변경 시 재실행
-    mode,
-    setInitialFile,
-    handleRemoveFile,
-    setAttachmentId,
-  ]);
+    isInitialized.current = true;
+  }, [project?.projectId, mode]);
 
   const fetchBoards = useCallback(async () => {
-    // 💡 [수정] currentProject를 사용하거나 project prop을 사용
-    const projectToFetch = currentProject || project;
-    if (!projectToFetch || mode !== 'detail') {
+    const projectId = currentProject?.projectId || project?.projectId;
+    if (!projectId || mode !== 'detail') {
       setBoards([]);
       return;
     }
     setIsBoardsLoading(true);
     try {
-      const response = await getBoardsByProject(projectToFetch.projectId);
+      const response = await getBoardsByProject(projectId);
       setBoards(response || []);
     } catch (err) {
       console.error('❌ Failed to fetch boards for statistics:', err);
@@ -197,7 +180,7 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
     } finally {
       setIsBoardsLoading(false);
     }
-  }, [currentProject, project, mode]); // 💡 [수정] currentProject 의존성 추가
+  }, [currentProject?.projectId, project?.projectId, mode]);
 
   useEffect(() => {
     fetchBoards();
@@ -229,13 +212,11 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
 
     try {
       if (selectedFile) {
-        // 1. 새 파일 업로드
         const uploadResult = await upload(workspaceId, 'project');
         if (uploadResult) {
           attachmentIdsPayload = [uploadResult.attachmentId];
         }
       } else if (mode === 'edit' && !previewUrl && currentAttachmentId) {
-        // 2. 기존 파일 삭제 의도
         attachmentIdsPayload = [];
       }
 
@@ -256,24 +237,19 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
 
         alert(`✅ ${name} 프로젝트가 수정되었습니다!`);
 
-        // 💡 [핵심 수정] 서버 응답으로 로컬 프로젝트 상태를 갱신
+        // 로컬 상태만 업데이트 (useEffect 트리거 안 함)
         setCurrentProject(updatedProject);
 
-        // 수정 성공 후, 최신 첨부 파일 정보를 상태에 반영
         const newAttachment = updatedProject.attachments?.[0];
         setFirstAttachmentState(newAttachment);
         setCurrentAttachmentId(newAttachment?.id);
 
-        // 파일 업로드 훅 상태 갱신
         if (newAttachment) {
           setInitialFile(newAttachment.fileUrl, newAttachment.fileName);
           setAttachmentId(newAttachment.id);
         } else {
           handleRemoveFile();
         }
-
-        // 보드 정보 fetch를 통해 상세 보기 모드의 통계 갱신 (currentProject 갱신으로 fetchBoards가 재실행됨)
-        // await fetchBoards(); // currentProject 의존성이 추가되었으므로 불필요
 
         onProjectSaved();
         setMode('detail');
@@ -300,7 +276,6 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
     }
   };
 
-  // 💡 [추가] 렌더링에 사용할 최종 프로젝트 데이터
   const projectToDisplay = currentProject || project;
 
   const modalTitle = useMemo(() => {
@@ -308,23 +283,20 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
       case 'create':
         return '새 프로젝트 만들기';
       case 'edit':
-        return `${projectToDisplay?.name || '프로젝트'} 수정`; // 💡 projectToDisplay 사용
+        return `${projectToDisplay?.name || '프로젝트'} 수정`;
       default:
-        return `${projectToDisplay?.name || '프로젝트'} 상세 정보`; // 💡 projectToDisplay 사용
+        return `${projectToDisplay?.name || '프로젝트'} 상세 정보`;
     }
   }, [mode, projectToDisplay?.name]);
 
-  // 상세 보기용 파일 정보 (firstAttachmentState 사용)
   const detailFileUrl = firstAttachmentState?.fileUrl || '';
   const detailFileName = firstAttachmentState?.fileName || 'project_file_attachment';
   const hasAttachments = !!firstAttachmentState;
 
-  // 공통 입력 필드 스타일
   const inputBaseStyle = `w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm`;
   const detailInputStyle = `${inputBaseStyle} bg-gray-100 text-gray-700`;
   const editInputStyle = `${inputBaseStyle} bg-white`;
 
-  // 입력 필드 렌더링 함수 (생략)
   const renderInputField = (
     label: string,
     value: string,
@@ -380,14 +352,10 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
     );
   };
 
-  // ========================================
-  // 🎨 Detail / Edit Mode 렌더링
-  // ========================================
   const renderDetailOrEditContent = () => (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-2 space-y-4">
-          {/* Name */}
           {renderInputField(
             '프로젝트 이름',
             name,
@@ -397,13 +365,11 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
             100,
           )}
 
-          {/* Dates */}
           <div className="grid grid-cols-2 gap-4">
             {renderInputField('시작일', startDate, (e) => setStartDate(e.target.value), 'date')}
             {renderInputField('마감일', dueDate, (e) => setDueDate(e.target.value), 'date')}
           </div>
 
-          {/* Description */}
           {renderInputField(
             '프로젝트 설명',
             description,
@@ -415,10 +381,8 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
             10,
           )}
 
-          {/* Files 섹션 */}
           <div className="pt-0">
             {mode === 'edit' ? (
-              // ✏️ 수정 모드: 파일 업로더 표시
               <FileUploader
                 selectedFile={selectedFile}
                 previewUrl={previewUrl}
@@ -429,7 +393,6 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
                 label="첨부 파일 수정"
               />
             ) : (
-              // 📖 상세 보기 모드: 다운로드 UI 표시
               <>
                 <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
                   <Paperclip className="w-4 h-4 text-blue-500" />
@@ -467,9 +430,8 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
                   ) : (
                     <span className="text-gray-400 text-xs flex-shrink-0">다운로드 불가</span>
                   )}
-                  {/* 이미지 미리보기 툴팁 */}
                   {previewImage && mode === 'detail' && (
-                    <div className="absolute left-0 bottom-full **mb-6** z-50 pointer-events-none">
+                    <div className="absolute left-0 bottom-full mb-6 z-50 pointer-events-none">
                       <div className="bg-white border-2 border-gray-300 rounded-lg shadow-2xl p-2">
                         <img
                           src={previewImage}
@@ -486,9 +448,8 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
           </div>
         </div>
 
-        {/* Right Section */}
         <div className="col-span-1 space-y-4 divide-y divide-gray-200 pl-4 border-l border-gray-200">
-          {projectToDisplay && ( // 💡 [수정] projectToDisplay 사용
+          {projectToDisplay && (
             <div className="pb-4">
               <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
                 <UserIcon className="w-4 h-4 text-gray-500" />
@@ -496,17 +457,16 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
               </label>
               <div className="text-sm font-medium text-gray-700 ml-1">
                 {projectToDisplay?.ownerName}
-              </div>{' '}
-              {/* 💡 [수정] projectToDisplay 사용 */}
+              </div>
             </div>
           )}
 
           <div className="pt-4">
             <h3 className="text-md font-bold text-gray-800 mb-2">
-              소속 멤버 ({projectMembers?.length}명)
+              소속 멤버 ({members?.length}명)
             </h3>
             <div className="max-h-56 overflow-y-auto space-y-2">
-              {projectMembers?.map((member) => (
+              {members?.map((member) => (
                 <div
                   key={member?.userId}
                   className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 transition"
@@ -561,19 +521,31 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex gap-3 pt-4 px-6 sticky bottom-0 bg-white border-t border-gray-300">
         {mode === 'edit' && (
           <button
             type="button"
             onClick={() => {
               setMode('detail');
-              // 수정 취소 시 폼 상태 및 파일 상태를 project prop 기준으로 재설정
-              if (project) {
-                // 💡 [수정] currentProject를 prop 기준으로 초기화하여 취소 시에도 prop을 따르도록 함
-                setCurrentProject(project);
+              // 취소 시 currentProject 기준으로 폼 복원
+              if (currentProject) {
+                setName(currentProject.name);
+                setDescription(currentProject.description || '');
+                setStartDate(
+                  currentProject.startDate ? currentProject.startDate.substring(0, 10) : '',
+                );
+                setDueDate(currentProject.dueDate ? currentProject.dueDate.substring(0, 10) : '');
 
-                // 나머지 폼 상태는 useEffect가 currentProject를 보고 재설정할 것임.
+                const attachment = currentProject.attachments?.[0];
+                setFirstAttachmentState(attachment);
+                setCurrentAttachmentId(attachment?.id);
+
+                if (attachment) {
+                  setInitialFile(attachment.fileUrl, attachment.fileName);
+                  setAttachmentId(attachment.id);
+                } else {
+                  handleRemoveFile();
+                }
               }
             }}
             className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition"
@@ -614,14 +586,10 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
     </form>
   );
 
-  // ----------------------------------------------------
-  // 🎨 Create Mode 렌더링
-  // ----------------------------------------------------
   const renderCreateContent = () => (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-2 space-y-4">
-          {/* Name */}
           {renderInputField(
             '프로젝트 이름',
             name,
@@ -632,7 +600,6 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
             '예: Wealist 서비스 개발',
           )}
 
-          {/* Dates */}
           <div className="grid grid-cols-2 gap-4">
             {renderInputField(
               '시작일 (선택)',
@@ -643,7 +610,6 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
             {renderInputField('마감일 (선택)', dueDate, (e) => setDueDate(e.target.value), 'date')}
           </div>
 
-          {/* Description */}
           {renderInputField(
             '프로젝트 설명 (선택)',
             description,
@@ -655,7 +621,6 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
             5,
           )}
 
-          {/* FileUploader */}
           <div>
             <FileUploader
               selectedFile={selectedFile}
@@ -668,7 +633,6 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
           </div>
         </div>
 
-        {/* Right Section (Instructions) */}
         <div className="col-span-1 space-y-4 divide-y divide-gray-200 pl-4 border-l border-gray-200">
           <div className="pb-4">
             <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1">
@@ -723,7 +687,6 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
           className={`relative w-full max-w-4xl ${theme.colors.card} p-6 ${theme.effects.borderRadius} shadow-xl max-h-[90vh] overflow-y-auto`}
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Header */}
           <div className="flex items-center justify-between mb-4 pb-2">
             <div className="flex items-center">
               <h2 className="text-xl font-bold text-gray-800">{modalTitle}</h2>
