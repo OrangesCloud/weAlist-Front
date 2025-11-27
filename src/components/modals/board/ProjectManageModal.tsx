@@ -132,12 +132,15 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
     );
   }, [isExistingProject, userRole]);
 
-  // [오류 해결] members prop이 변경될 때 projectMembers 상태를 갱신합니다. (무한 루프 방지)
+  // ✅ 수정된 useEffect (projectMembers를 의존성에서 제거)
   useEffect(() => {
-    if (members !== projectMembers) {
+    // members prop이 변경되었을 때만 projectMembers 상태를 갱신합니다.
+    // 이 조건을 통해 무한 루프를 방지합니다.
+    if (members) {
       setProjectMembers(members);
     }
-  }, [members, projectMembers]);
+    // 주의: projectMembers를 의존성 배열에 넣으면 무한 루프가 발생합니다.
+  }, [members]);
 
   // 프로젝트 데이터 로드 및 파일 상태 초기화 (메인 useEffect)
   useEffect(() => {
