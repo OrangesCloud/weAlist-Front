@@ -126,10 +126,7 @@ export const ProjectManageModal: React.FC<ProjectManageModalProps> = ({
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const canEdit = useMemo(() => {
-    return (
-      isExistingProject &&
-      (userRole === 'OWNER' || userRole === 'ADMIN' || userRole === 'ORGANIZER')
-    );
+    return isExistingProject && (userRole === 'OWNER' || userRole === 'ADMIN');
   }, [isExistingProject, userRole]);
 
   // ✅ 수정된 useEffect (projectMembers를 의존성에서 제거)
